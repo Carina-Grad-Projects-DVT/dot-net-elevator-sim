@@ -1,6 +1,6 @@
 ﻿namespace ElevatorSim.Infrastructure;
 
-public class Class1
-{
-
-}
+/// <summary>
+/// Provides infrastructure-layer functionality.
+/// </summary>
+public class Class1 { }

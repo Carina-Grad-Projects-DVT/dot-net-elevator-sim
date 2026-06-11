@@ -1,6 +1,6 @@
 ﻿namespace ElevatorSim.Application;
 
-public class Class1
-{
-
-}
+/// <summary>
+/// Provides application-layer functionality.
+/// </summary>
+public class Class1 { }

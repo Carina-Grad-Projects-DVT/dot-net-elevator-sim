@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "mn7lLjjP0PI=",
+  "dgSpecHash": "9W0YnnA5DxI=",
   "success": true,
-  "projectFilePath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Application/ElevatorSim.Application.csproj",
+  "projectFilePath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Application/ElevatorSim.Application.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

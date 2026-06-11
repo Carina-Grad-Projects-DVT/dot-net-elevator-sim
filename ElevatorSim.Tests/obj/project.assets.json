@@ -393,6 +393,29 @@
         "build": {
           "build/net8.0/xunit.runner.visualstudio.props": {}
         }
+      },
+      "ElevatorSim.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "ElevatorSim.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/ElevatorSim.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ElevatorSim.Application.dll": {}
+        }
+      },
+      "ElevatorSim.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/ElevatorSim.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ElevatorSim.Domain.dll": {}
+        }
       }
     }
   },
@@ -903,10 +926,22 @@
         "xunit.runner.visualstudio.3.1.4.nupkg.sha512",
         "xunit.runner.visualstudio.nuspec"
       ]
+    },
+    "ElevatorSim.Application/1.0.0": {
+      "type": "project",
+      "path": "../ElevatorSim.Application/ElevatorSim.Application.csproj",
+      "msbuildProject": "../ElevatorSim.Application/ElevatorSim.Application.csproj"
+    },
+    "ElevatorSim.Domain/1.0.0": {
+      "type": "project",
+      "path": "../ElevatorSim.Domain/ElevatorSim.Domain.csproj",
+      "msbuildProject": "../ElevatorSim.Domain/ElevatorSim.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "ElevatorSim.Application >= 1.0.0",
+      "ElevatorSim.Domain >= 1.0.0",
       "Microsoft.NET.Test.Sdk >= 17.14.1",
       "coverlet.collector >= 6.0.4",
       "xunit >= 2.9.3",
@@ -919,11 +954,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Tests/ElevatorSim.Tests.csproj",
+      "projectUniqueName": "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Tests/ElevatorSim.Tests.csproj",
       "projectName": "ElevatorSim.Tests",
-      "projectPath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Tests/ElevatorSim.Tests.csproj",
+      "projectPath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Tests/ElevatorSim.Tests.csproj",
       "packagesPath": "/Users/carinadiesel/.nuget/packages/",
-      "outputPath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Tests/obj/",
+      "outputPath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Tests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/carinadiesel/.nuget/NuGet/NuGet.Config"
@@ -937,7 +972,14 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Application/ElevatorSim.Application.csproj": {
+              "projectPath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Application/ElevatorSim.Application.csproj"
+            },
+            "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/ElevatorSim.Domain.csproj": {
+              "projectPath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/ElevatorSim.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

@@ -1,6 +1,6 @@
 ﻿namespace ElevatorSim.Domain;
 
-public class Class1
-{
-
-}
+/// <summary>
+/// Provides domain-layer functionality.
+/// </summary>
+public class Class1 { }

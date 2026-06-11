@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "j+ZTG//j/is=",
+  "dgSpecHash": "cvy3x9+tM9Y=",
   "success": true,
-  "projectFilePath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Tests/ElevatorSim.Tests.csproj",
+  "projectFilePath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Tests/ElevatorSim.Tests.csproj",
   "expectedPackageFiles": [
     "/Users/carinadiesel/.nuget/packages/coverlet.collector/6.0.4/coverlet.collector.6.0.4.nupkg.sha512",
     "/Users/carinadiesel/.nuget/packages/microsoft.codecoverage/17.14.1/microsoft.codecoverage.17.14.1.nupkg.sha512",

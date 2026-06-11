@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <ProjectReference Include="..\ElevatorSim.Application\ElevatorSim.Application.csproj" />
     <ProjectReference Include="..\ElevatorSim.Infrastructure\ElevatorSim.Infrastructure.csproj" />
@@ -11,5 +10,4 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
 </Project>

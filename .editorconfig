@@ -1,0 +1,124 @@
+root = true
+
+[*.cs]
+#### Analyzer policy
+
+dotnet_analyzer_diagnostic.category-Style.severity = warning
+dotnet_analyzer_diagnostic.category-Design.severity = warning
+dotnet_analyzer_diagnostic.category-Documentation.severity = warning
+
+# Prefer nameof(...) when a string literal names a symbol.
+dotnet_diagnostic.CA1507.severity = warning
+
+# ArgumentException parameter names should refer to real parameters.
+dotnet_diagnostic.CA2208.severity = warning
+
+# Unused variables, assignments, parameters, members, and using directives.
+dotnet_diagnostic.CS0168.severity = warning
+dotnet_diagnostic.CS0219.severity = warning
+dotnet_diagnostic.CS8019.severity = warning
+dotnet_diagnostic.IDE0005.severity = warning
+dotnet_diagnostic.IDE0051.severity = warning
+dotnet_diagnostic.IDE0052.severity = warning
+dotnet_diagnostic.IDE0059.severity = warning
+dotnet_diagnostic.IDE0060.severity = warning
+
+# XML documentation comments on public types and members.
+dotnet_diagnostic.CS1591.severity = warning
+
+# Match CSharpier's formatting for namespace declarations.
+csharp_style_namespace_declarations = file_scoped:warning
+
+#### Naming conventions
+
+# Styles
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+dotnet_naming_style.camel_case.capitalization = camel_case
+
+dotnet_naming_style.interface_style.required_prefix = I
+dotnet_naming_style.interface_style.capitalization = pascal_case
+
+dotnet_naming_style.private_instance_field_style.required_prefix = _
+dotnet_naming_style.private_instance_field_style.capitalization = camel_case
+
+dotnet_naming_style.private_static_field_style.required_prefix = s_
+dotnet_naming_style.private_static_field_style.capitalization = camel_case
+
+# Symbols
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+dotnet_naming_symbols.interfaces.applicable_accessibilities = *
+
+dotnet_naming_symbols.types.applicable_kinds = class, struct, enum, delegate
+dotnet_naming_symbols.types.applicable_accessibilities = *
+
+dotnet_naming_symbols.methods_and_properties.applicable_kinds = method, property
+dotnet_naming_symbols.methods_and_properties.applicable_accessibilities = *
+
+dotnet_naming_symbols.public_fields.applicable_kinds = field
+dotnet_naming_symbols.public_fields.applicable_accessibilities = public
+
+dotnet_naming_symbols.local_variables.applicable_kinds = local
+dotnet_naming_symbols.local_variables.applicable_accessibilities = local
+
+dotnet_naming_symbols.parameters.applicable_kinds = parameter
+dotnet_naming_symbols.parameters.applicable_accessibilities = *
+
+dotnet_naming_symbols.private_instance_fields.applicable_kinds = field
+dotnet_naming_symbols.private_instance_fields.applicable_accessibilities = private
+
+dotnet_naming_symbols.private_static_fields.applicable_kinds = field
+dotnet_naming_symbols.private_static_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_static_fields.required_modifiers = static
+
+# Rules
+dotnet_naming_rule.interfaces_should_be_ipascal_case.severity = warning
+dotnet_naming_rule.interfaces_should_be_ipascal_case.symbols = interfaces
+dotnet_naming_rule.interfaces_should_be_ipascal_case.style = interface_style
+
+dotnet_naming_rule.types_should_be_pascal_case.severity = warning
+dotnet_naming_rule.types_should_be_pascal_case.symbols = types
+dotnet_naming_rule.types_should_be_pascal_case.style = pascal_case
+
+dotnet_naming_rule.methods_and_properties_should_be_pascal_case.severity = warning
+dotnet_naming_rule.methods_and_properties_should_be_pascal_case.symbols = methods_and_properties
+dotnet_naming_rule.methods_and_properties_should_be_pascal_case.style = pascal_case
+
+dotnet_naming_rule.public_fields_should_be_pascal_case.severity = warning
+dotnet_naming_rule.public_fields_should_be_pascal_case.symbols = public_fields
+dotnet_naming_rule.public_fields_should_be_pascal_case.style = pascal_case
+
+dotnet_naming_rule.local_variables_should_be_camel_case.severity = warning
+dotnet_naming_rule.local_variables_should_be_camel_case.symbols = local_variables
+dotnet_naming_rule.local_variables_should_be_camel_case.style = camel_case
+
+dotnet_naming_rule.parameters_should_be_camel_case.severity = warning
+dotnet_naming_rule.parameters_should_be_camel_case.symbols = parameters
+dotnet_naming_rule.parameters_should_be_camel_case.style = camel_case
+
+dotnet_naming_rule.private_static_fields_should_be_s_camel_case.severity = warning
+dotnet_naming_rule.private_static_fields_should_be_s_camel_case.symbols = private_static_fields
+dotnet_naming_rule.private_static_fields_should_be_s_camel_case.style = private_static_field_style
+
+dotnet_naming_rule.private_instance_fields_should_be_camel_case.severity = warning
+dotnet_naming_rule.private_instance_fields_should_be_camel_case.symbols = private_instance_fields
+dotnet_naming_rule.private_instance_fields_should_be_camel_case.style = private_instance_field_style
+
+[*.{cs,csx}]
+# Non-configurable behaviors
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# Configurable behaviors
+# end_of_line = lf - there is no 'auto' with an .editorconfig
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+[*.{config,csproj,props,slnx,targets,xaml,xml}]
+indent_style = space
+indent_size = 2
+max_line_length = 100

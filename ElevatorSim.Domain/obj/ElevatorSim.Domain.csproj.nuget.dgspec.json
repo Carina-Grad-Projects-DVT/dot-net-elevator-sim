@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Domain/ElevatorSim.Domain.csproj": {}
+    "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/ElevatorSim.Domain.csproj": {}
   },
   "projects": {
-    "/Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Domain/ElevatorSim.Domain.csproj": {
+    "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/ElevatorSim.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Domain/ElevatorSim.Domain.csproj",
+        "projectUniqueName": "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/ElevatorSim.Domain.csproj",
         "projectName": "ElevatorSim.Domain",
-        "projectPath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Domain/ElevatorSim.Domain.csproj",
+        "projectPath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/ElevatorSim.Domain.csproj",
         "packagesPath": "/Users/carinadiesel/.nuget/packages/",
-        "outputPath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Domain/obj/",
+        "outputPath": "/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/carinadiesel/.nuget/NuGet/NuGet.Config"

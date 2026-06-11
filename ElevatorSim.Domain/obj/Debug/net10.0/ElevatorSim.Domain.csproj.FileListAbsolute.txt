@@ -10,3 +10,17 @@
 /Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Domain/obj/Debug/net10.0/refint/ElevatorSim.Domain.dll
 /Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Domain/obj/Debug/net10.0/ElevatorSim.Domain.pdb
 /Users/carinadiesel/Workshop/dot-net-elevator-project/dot-net-elevator-sim/ElevatorSim.Domain/obj/Debug/net10.0/ref/ElevatorSim.Domain.dll
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/bin/Debug/net10.0/ElevatorSim.Domain.deps.json
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/bin/Debug/net10.0/ElevatorSim.Domain.dll
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/bin/Debug/net10.0/ElevatorSim.Domain.pdb
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/Debug/net10.0/ElevatorSim.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/Debug/net10.0/ElevatorSim.Domain.AssemblyInfoInputs.cache
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/Debug/net10.0/ElevatorSim.Domain.AssemblyInfo.cs
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/Debug/net10.0/ElevatorSim.Domain.csproj.CoreCompileInputs.cache
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/Debug/net10.0/ElevatorSim.Domain.sourcelink.json
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/Debug/net10.0/ElevatorSim.Domain.dll
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/Debug/net10.0/refint/ElevatorSim.Domain.dll
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/Debug/net10.0/ElevatorSim.Domain.pdb
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/Debug/net10.0/ref/ElevatorSim.Domain.dll
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/bin/Debug/net10.0/ElevatorSim.Domain.xml
+/Users/carinadiesel/Workshop/dot-net-elevator-project/ElevatorSim/ElevatorSim.Domain/obj/Debug/net10.0/ElevatorSim.Domain.xml

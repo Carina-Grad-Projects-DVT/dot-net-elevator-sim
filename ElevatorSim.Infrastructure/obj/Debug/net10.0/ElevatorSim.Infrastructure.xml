@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ElevatorSim.Infrastructure</name>
+    </assembly>
+    <members>
+        <member name="T:ElevatorSim.Infrastructure.Class1">
+            <summary>
+            Provides infrastructure-layer functionality.
+            </summary>
+        </member>
+    </members>
+</doc>

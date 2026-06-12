@@ -151,7 +151,7 @@ public sealed class Elevator
         if (MotionState == MotionState.Moving)
         {
             throw new InvalidOperationException(
-                "Doors cannot be opened while the elevator is moving."
+                "Doors cannot be opened while the elevator is in motion."
             );
         }
 

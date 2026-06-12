@@ -13,7 +13,9 @@ public class ElevatorBasicBehaviorTests
         var elevator = new ElevatorEntity(
             id: new ElevatorId(1),
             startingFloor: FloorNumber.Create(0, -1, 10),
-            maximumCapacity: 8
+            maximumCapacity: 8,
+            minimumFloor: -1,
+            maximumFloor: 10
         );
 
         elevator.Board(new PassengerCount(3));
@@ -28,7 +30,9 @@ public class ElevatorBasicBehaviorTests
         var elevator = new ElevatorEntity(
             id: new ElevatorId(1),
             startingFloor: FloorNumber.Create(0, -1, 10),
-            maximumCapacity: 5
+            maximumCapacity: 5,
+            minimumFloor: -1,
+            maximumFloor: 10
         );
 
         elevator.Board(new PassengerCount(4));
@@ -47,7 +51,9 @@ public class ElevatorBasicBehaviorTests
         var elevator = new ElevatorEntity(
             id: new ElevatorId(1),
             startingFloor: FloorNumber.Create(0, -1, 10),
-            maximumCapacity: 8
+            maximumCapacity: 8,
+            minimumFloor: -1,
+            maximumFloor: 10
         );
 
         elevator.SetMovementState(Direction.Up, MotionState.Moving);
@@ -56,5 +62,38 @@ public class ElevatorBasicBehaviorTests
 
         Assert.Contains("cannot be opened", exception.Message);
         Assert.Equal(DoorState.Closed, elevator.DoorState);
+    }
+
+    [Fact]
+    public void Close_Door_If_Open_Before_Moving()
+    {
+        // Arrange
+        var elevator = new ElevatorEntity(
+            id: new ElevatorId(2),
+            startingFloor: FloorNumber.Create(0, -1, 10),
+            maximumCapacity: 8,
+            minimumFloor: -1,
+            maximumFloor: 10
+        );
+
+        elevator.OpenDoors();
+        elevator.RequestStop(2);
+
+        // Act - tick 1 (should close doors only)
+        elevator.Step();
+
+        // Assert - no movement
+        Assert.Equal(FloorNumber.Create(0, -1, 10), elevator.CurrentFloor);
+        Assert.Equal(DoorState.Closed, elevator.DoorState);
+        Assert.Equal(MotionState.Stationary, elevator.MotionState);
+        Assert.Equal(Direction.None, elevator.Direction);
+
+        // Act - tick 2 initialize movement
+        elevator.Step();
+
+        // Assert - moved one floor
+        Assert.Equal(FloorNumber.Create(1, -1, 10), elevator.CurrentFloor);
+        Assert.Equal(MotionState.Moving, elevator.MotionState);
+        Assert.Equal(Direction.Up, elevator.Direction);
     }
 }

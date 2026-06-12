@@ -11,16 +11,18 @@
         </member>
         <member name="T:ElevatorSim.Domain.Entities.Elevator">
             <summary>
-            Represents a passenger elevator with state and capacity management.
+            Represents a passenger elevator with state, stop queue, and tick-based movement.
             </summary>
         </member>
-        <member name="M:ElevatorSim.Domain.Entities.Elevator.#ctor(ElevatorSim.Domain.ValueObjects.ElevatorId,ElevatorSim.Domain.ValueObjects.FloorNumber,System.Int32)">
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.#ctor(ElevatorSim.Domain.ValueObjects.ElevatorId,ElevatorSim.Domain.ValueObjects.FloorNumber,System.Int32,System.Int32,System.Int32)">
             <summary>
-            Initializes a new Elevator instance.
+            Initializes a new Elevator instance with restricted floor range.
             </summary>
             <param name="id">Unique elevator identifier.</param>
             <param name="startingFloor">Floor where the elevator initially starts.</param>
-            <param name="maximumCapacity">Maximum number of passengers elevator can take.</param>
+            <param name="maximumCapacity">Maximum number of passengers the elevator can carry.</param>
+            <param name="minimumFloor">Minimum supported floor for this elevator.</param>
+            <param name="maximumFloor">Maximum supported floor for this elevator.</param>
         </member>
         <member name="P:ElevatorSim.Domain.Entities.Elevator.Id">
             <summary>
@@ -49,7 +51,7 @@
         </member>
         <member name="P:ElevatorSim.Domain.Entities.Elevator.MaximumCapacity">
             <summary>
-            Gets the maximum number of passengers this elevator can take.
+            Gets the maximum number of passengers this elevator can carry.
             </summary>
         </member>
         <member name="P:ElevatorSim.Domain.Entities.Elevator.CurrentPassengers">
@@ -65,6 +67,16 @@
         <member name="P:ElevatorSim.Domain.Entities.Elevator.IsStationary">
             <summary>
             Gets a value indicating whether the elevator is currently stationary.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.HasPendingStops">
+            <summary>
+            Gets a value indicating whether at least one stop is queued.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.PendingStopCount">
+            <summary>
+            Gets the number of pending queued stops.
             </summary>
         </member>
         <member name="M:ElevatorSim.Domain.Entities.Elevator.CanBoardMore(ElevatorSim.Domain.ValueObjects.PassengerCount)">
@@ -85,27 +97,51 @@
             </summary>
             <param name="disembarkingPassengers">Passenger count to disembark.</param>
         </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.RequestStop(System.Int32)">
+            <summary>
+            Queues a stop request by floor value.
+            </summary>
+            <param name="floorValue">Requested stop floor.</param>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.RequestStop(ElevatorSim.Domain.ValueObjects.FloorNumber)">
+            <summary>
+            Queues a stop request.
+            </summary>
+            <param name="requestedFloor">Requested stop floor.</param>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.Step">
+            <summary>
+            Advances simulation by one tick.
+            Each tick either closes doors, moves one floor toward target, or handles arrival state.
+            </summary>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.AdvanceTicks(System.Int32)">
+            <summary>
+            Advances simulation by a number of ticks.
+            </summary>
+            <param name="tickCount">Number of ticks to process.</param>
+        </member>
         <member name="M:ElevatorSim.Domain.Entities.Elevator.SetCurrentFloor(ElevatorSim.Domain.ValueObjects.FloorNumber)">
             <summary>
-            Updates the current floor.
+            Updates the current floor directly.
             </summary>
             <param name="floor">New floor.</param>
         </member>
         <member name="M:ElevatorSim.Domain.Entities.Elevator.SetMovementState(ElevatorSim.Domain.Enums.Direction,ElevatorSim.Domain.Enums.MotionState)">
             <summary>
-            Updates movement state and direction.
+            Updates movement state and direction directly.
             </summary>
             <param name="direction">Current travel direction.</param>
             <param name="motionState">Current motion state.</param>
         </member>
         <member name="M:ElevatorSim.Domain.Entities.Elevator.OpenDoors">
             <summary>
-            Opens the elevator doors.
+            Opens elevator doors.
             </summary>
         </member>
         <member name="M:ElevatorSim.Domain.Entities.Elevator.CloseDoors">
             <summary>
-            Closes the elevator doors.
+            Closes elevator doors.
             </summary>
         </member>
         <member name="T:ElevatorSim.Domain.Enums.Direction">

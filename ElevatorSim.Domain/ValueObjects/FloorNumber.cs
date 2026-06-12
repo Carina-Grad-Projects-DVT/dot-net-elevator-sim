@@ -37,7 +37,6 @@ public readonly record struct FloorNumber : IComparable<FloorNumber>
                 $"Floor must be between {minimumFloor} and {maximumFloor}."
             );
         }
-
         return new FloorNumber(value);
     }
 

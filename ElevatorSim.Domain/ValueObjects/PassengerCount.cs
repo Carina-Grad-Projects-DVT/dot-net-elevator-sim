@@ -5,26 +5,22 @@ namespace ElevatorSim.Domain.ValueObjects;
 /// </summary>
 public readonly record struct PassengerCount
 {
+    /// <summary>
+    /// Gets the passenger count value.
+    /// </summary>
     public int Value { get; }
 
+    /// <summary>
+    /// Represents zero (0) passengers.
+    /// </summary>
     public static PassengerCount Zero => new(0);
 
-    private PassengerCount(int value)
+    /// <summary>
+    /// Initializes a new PassengerCount instance.
+    /// </summary>
+    /// <param name="value">Passenger count. Must be zero or greater.</param>
+    public PassengerCount(int value)
     {
-        Value = value;
-    }
-
-    public static PassengerCount Create(int value, int maximumPassengers)
-    {
-        if (maximumPassengers < 1)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(maximumPassengers),
-                maximumPassengers,
-                "Maximum passengers must be at least 1."
-            );
-        }
-
         if (value < 0)
         {
             throw new ArgumentOutOfRangeException(
@@ -33,16 +29,6 @@ public readonly record struct PassengerCount
                 "Passenger count cannot be negative."
             );
         }
-
-        if (value > maximumPassengers)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(value),
-                value,
-                $"Passenger count cannot exceed maximum capacity ({maximumPassengers})."
-            );
-        }
-
-        return new PassengerCount(value);
+        Value = value;
     }
 }

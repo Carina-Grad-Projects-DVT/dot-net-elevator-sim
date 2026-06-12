@@ -9,5 +9,235 @@
             Provides domain-layer functionality.
             </summary>
         </member>
+        <member name="T:ElevatorSim.Domain.Entities.Elevator">
+            <summary>
+            Represents a passenger elevator with state and capacity management.
+            </summary>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.#ctor(ElevatorSim.Domain.ValueObjects.ElevatorId,ElevatorSim.Domain.ValueObjects.FloorNumber,System.Int32)">
+            <summary>
+            Initializes a new Elevator instance.
+            </summary>
+            <param name="id">Unique elevator identifier.</param>
+            <param name="startingFloor">Floor where the elevator initially starts.</param>
+            <param name="maximumCapacity">Maximum number of passengers elevator can take.</param>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.Id">
+            <summary>
+            Gets the elevator identifier.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.CurrentFloor">
+            <summary>
+            Gets the elevator's current floor.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.Direction">
+            <summary>
+            Gets the elevator's movement direction.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.MotionState">
+            <summary>
+            Gets whether the elevator is moving or stationary.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.DoorState">
+            <summary>
+            Gets the elevator door state.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.MaximumCapacity">
+            <summary>
+            Gets the maximum number of passengers this elevator can take.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.CurrentPassengers">
+            <summary>
+            Gets the current number of passengers onboard.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.IsAtCapacity">
+            <summary>
+            Gets a value indicating whether the elevator is at capacity.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.Entities.Elevator.IsStationary">
+            <summary>
+            Gets a value indicating whether the elevator is currently stationary.
+            </summary>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.CanBoardMore(ElevatorSim.Domain.ValueObjects.PassengerCount)">
+            <summary>
+            Determines whether additional passengers can board without exceeding capacity.
+            </summary>
+            <param name="awaitingPassengers">Awaiting passenger count.</param>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.Board(ElevatorSim.Domain.ValueObjects.PassengerCount)">
+            <summary>
+            Adds passengers to the elevator if capacity allows.
+            </summary>
+            <param name="awaitingPassengers">Passenger count to board.</param>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.Disembark(ElevatorSim.Domain.ValueObjects.PassengerCount)">
+            <summary>
+            Removes passengers from the elevator.
+            </summary>
+            <param name="disembarkingPassengers">Passenger count to disembark.</param>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.SetCurrentFloor(ElevatorSim.Domain.ValueObjects.FloorNumber)">
+            <summary>
+            Updates the current floor.
+            </summary>
+            <param name="floor">New floor.</param>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.SetMovementState(ElevatorSim.Domain.Enums.Direction,ElevatorSim.Domain.Enums.MotionState)">
+            <summary>
+            Updates movement state and direction.
+            </summary>
+            <param name="direction">Current travel direction.</param>
+            <param name="motionState">Current motion state.</param>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.OpenDoors">
+            <summary>
+            Opens the elevator doors.
+            </summary>
+        </member>
+        <member name="M:ElevatorSim.Domain.Entities.Elevator.CloseDoors">
+            <summary>
+            Closes the elevator doors.
+            </summary>
+        </member>
+        <member name="T:ElevatorSim.Domain.Enums.Direction">
+            <summary>
+            Represents an elevator's current direction of motion.
+            </summary>
+        </member>
+        <member name="F:ElevatorSim.Domain.Enums.Direction.None">
+            <summary>
+            Elevator is at a stand still.
+            </summary>
+        </member>
+        <member name="F:ElevatorSim.Domain.Enums.Direction.Up">
+            <summary>
+            Elevator is moving up.
+            </summary>
+        </member>
+        <member name="F:ElevatorSim.Domain.Enums.Direction.Down">
+            <summary>
+            Elevator is moving down.
+            </summary>
+        </member>
+        <member name="T:ElevatorSim.Domain.Enums.DoorState">
+            <summary>
+            Represents what state the elevator's doors are in.
+            </summary>
+        </member>
+        <member name="F:ElevatorSim.Domain.Enums.DoorState.Closed">
+            <summary>
+            Elevator doors are close.
+            </summary>
+        </member>
+        <member name="F:ElevatorSim.Domain.Enums.DoorState.Opening">
+            <summary>
+            Elevator doors are opening.
+            </summary>
+        </member>
+        <member name="F:ElevatorSim.Domain.Enums.DoorState.Open">
+            <summary>
+            Elevator doors are open.
+            </summary>
+        </member>
+        <member name="F:ElevatorSim.Domain.Enums.DoorState.Closing">
+            <summary>
+            Elevator doors are closing.
+            </summary>
+        </member>
+        <member name="T:ElevatorSim.Domain.Enums.MotionState">
+            <summary>
+            Represents whether an elevator is moving or not.
+            </summary>
+        </member>
+        <member name="F:ElevatorSim.Domain.Enums.MotionState.Stationary">
+            <summary>
+            Elevator is not currently moving.
+            </summary>
+        </member>
+        <member name="F:ElevatorSim.Domain.Enums.MotionState.Moving">
+            <summary>
+            Elevator is moving between floors.
+            </summary>
+        </member>
+        <member name="T:ElevatorSim.Domain.ValueObjects.ElevatorId">
+            <summary>
+            Strongly typed identifier for an elevator.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.ValueObjects.ElevatorId.Value">
+            <summary>
+            Gets the underlying numeric identifier value.
+            </summary>
+        </member>
+        <member name="M:ElevatorSim.Domain.ValueObjects.ElevatorId.#ctor(System.Int32)">
+            <summary>
+            Initializes a new ElevatorId instance.
+            </summary>
+            <param name="value">Identifier value; must be > 0.</param>
+        </member>
+        <member name="M:ElevatorSim.Domain.ValueObjects.ElevatorId.ToString">
+            <summary>
+            Returns a display-friendly label for the elevator.
+            </summary>
+        </member>
+        <member name="T:ElevatorSim.Domain.ValueObjects.FloorNumber">
+            <summary>
+            Strongly typed floor number validated against a configurable building range.
+            Supports basement floors including negative values (example: -1 = B).
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.ValueObjects.FloorNumber.Value">
+            <summary>
+            Gets the underlying floor value.
+            </summary>
+        </member>
+        <member name="M:ElevatorSim.Domain.ValueObjects.FloorNumber.Create(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Creates a floor number using the building's configured min/max floor range.
+            </summary>
+            <param name="value">Requested floor.</param>
+            <param name="minimumFloor">Minimum allowed floor (can be negative for basements).</param>
+            <param name="maximumFloor">Maximum allowed floor.</param>
+        </member>
+        <member name="M:ElevatorSim.Domain.ValueObjects.FloorNumber.IsInRange(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Checks whether a raw floor value is within the configured range.
+            </summary>
+        </member>
+        <member name="M:ElevatorSim.Domain.ValueObjects.FloorNumber.ToString">
+            <summary>
+            Formats display value: basement floors as B1/B2 etc, ground floor as G, upper floors as numeric.
+            </summary>
+        </member>
+        <member name="T:ElevatorSim.Domain.ValueObjects.PassengerCount">
+            <summary>
+            Strongly typed value object for passenger counts.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.ValueObjects.PassengerCount.Value">
+            <summary>
+            Gets the passenger count value.
+            </summary>
+        </member>
+        <member name="P:ElevatorSim.Domain.ValueObjects.PassengerCount.Zero">
+            <summary>
+            Represents zero (0) passengers.
+            </summary>
+        </member>
+        <member name="M:ElevatorSim.Domain.ValueObjects.PassengerCount.#ctor(System.Int32)">
+            <summary>
+            Initializes a new PassengerCount instance.
+            </summary>
+            <param name="value">Passenger count. Must be zero or greater.</param>
+        </member>
     </members>
 </doc>

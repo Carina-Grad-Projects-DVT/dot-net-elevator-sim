@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ElevatorSim.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ceec2430926599404a4f436b6c962b7b72636375")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e69eab822a061efa9dae9bf613efc4ad316d71c0")]
 [assembly: System.Reflection.AssemblyProductAttribute("ElevatorSim.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ElevatorSim.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -32,3 +32,8 @@ packages/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Build folders
+[Bb]in/
+[Ob]ject/
+[Oo]bj/

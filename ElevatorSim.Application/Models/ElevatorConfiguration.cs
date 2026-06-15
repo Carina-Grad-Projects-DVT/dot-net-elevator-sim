@@ -5,17 +5,13 @@ namespace ElevatorSim.Application.Models;
 /// <summary>
 /// Configuration used by the factory to create an elevator instance.
 /// </summary>
-public sealed record ElevatorConfiguration
+public record ElevatorConfiguration
 {
     public required ElevatorType Type { get; init; }
     public required int MinimumFloor { get; init; }
     public required int MaximumFloor { get; init; }
     public required int StartingFloor { get; init; }
-
-    // For Passengers
     public int? MaximumPassengerCapacity { get; init; }
-
-    // For Freight (Unused for now)
     public decimal? MaximumFreightLoadKg { get; init; }
 
     public void ElevatorCreationValidation()
@@ -33,20 +29,34 @@ public sealed record ElevatorConfiguration
             );
         }
 
-        if (Type == ElevatorType.Passenger)
+        switch (Type)
         {
-            if (MaximumPassengerCapacity is null || MaximumPassengerCapacity.Value < 1)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(MaximumPassengerCapacity),
-                    "MaximumPassengerCapacity must be set and greater than 0 passengers"
-                );
-            }
-        }
+            case ElevatorType.Passenger:
+                if (MaximumPassengerCapacity is null || MaximumPassengerCapacity.Value < 1)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        nameof(MaximumPassengerCapacity),
+                        "MaximumPassengerCapacity must be set and greater than 0 passengers."
+                    );
+                }
+                break;
 
-        if (Type == ElevatorType.Freight)
-        {
-            throw new NotSupportedException("Freight elevator creation is not implemented yet.");
+            case ElevatorType.Freight:
+                if (MaximumFreightLoadKg is null || MaximumFreightLoadKg.Value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        nameof(MaximumFreightLoadKg),
+                        "MaximumFreightLoadKg must be set and greater than 0."
+                    );
+                }
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(
+                    nameof(Type),
+                    Type,
+                    "Unsupported elevator type."
+                );
         }
     }
 }

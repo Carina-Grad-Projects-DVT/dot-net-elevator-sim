@@ -21,15 +21,3 @@ public interface IElevator
     void Step();
     void AdvanceTicks(int tickCount);
 }
-
-public interface IPassengerElevator : IElevator
-{
-    PassengerCount CurrentPassengers { get; }
-    int MaximumPassengerCapacity { get; }
-    bool IsAtPassengerCapacity { get; }
-    bool CanBoard(PassengerCount passengers);
-    void Board(PassengerCount passengers);
-    void Disembark(PassengerCount passengers);
-}
-
-public interface IFreightElevator : IElevator { }

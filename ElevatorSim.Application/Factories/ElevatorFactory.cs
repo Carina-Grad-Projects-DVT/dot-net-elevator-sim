@@ -1,3 +1,4 @@
+using System.Threading;
 using ElevatorSim.Application.Models;
 using ElevatorSim.Domain.Entities;
 using ElevatorSim.Domain.Enums;
@@ -32,6 +33,8 @@ public sealed class ElevatorFactory : IElevatorFactory
         };
     }
 
+    private static int _nextElevatorId;
+
     public IReadOnlyList<IElevator> CreateMany(IEnumerable<ElevatorConfiguration> configurations)
     {
         ArgumentNullException.ThrowIfNull(configurations);
@@ -45,6 +48,11 @@ public sealed class ElevatorFactory : IElevatorFactory
         return elevators;
     }
 
+    private static ElevatorId CreateNextElevatorId()
+    {
+        return new ElevatorId(Interlocked.Increment(ref _nextElevatorId));
+    }
+
     private static IElevator CreatePassengerElevator(ElevatorConfiguration configuration)
     {
         if (configuration.MaximumPassengerCapacity is null)
@@ -56,7 +64,7 @@ public sealed class ElevatorFactory : IElevatorFactory
         }
 
         return new PassengerElevator(
-            id: new ElevatorId(configuration.Id),
+            id: CreateNextElevatorId(),
             startingFloor: FloorNumber.Create(
                 configuration.StartingFloor,
                 configuration.MinimumFloor,

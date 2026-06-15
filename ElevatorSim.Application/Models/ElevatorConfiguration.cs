@@ -7,7 +7,6 @@ namespace ElevatorSim.Application.Models;
 /// </summary>
 public sealed record ElevatorConfiguration
 {
-    public required int Id { get; init; }
     public required ElevatorType Type { get; init; }
     public required int MinimumFloor { get; init; }
     public required int MaximumFloor { get; init; }
@@ -21,14 +20,6 @@ public sealed record ElevatorConfiguration
 
     public void ElevatorCreationValidation()
     {
-        if (Id < 1)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(Id),
-                "Elevator id must be greater than 0."
-            );
-        }
-
         if (MinimumFloor > MaximumFloor)
         {
             throw new ArgumentException("MinimumFloor cannot be greater than MaximumFloor.");

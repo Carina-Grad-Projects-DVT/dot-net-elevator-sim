@@ -6,7 +6,6 @@ using ElevatorSim.Domain.Enums;
 var factory = new ElevatorFactory();
 var elevatorConfiguration = new ElevatorConfiguration
 {
-    Id = 1,
     Type = ElevatorType.Passenger,
     MinimumFloor = -1,
     MaximumFloor = 10,

@@ -14,7 +14,6 @@ public class ElevatorFactoryTests
         var factory = new ElevatorFactory();
         var configuration = new ElevatorConfiguration
         {
-            Id = 1,
             Type = ElevatorType.Passenger,
             MinimumFloor = -1,
             MaximumFloor = 10,
@@ -25,7 +24,7 @@ public class ElevatorFactoryTests
         var elevator = factory.Create(configuration);
 
         var passengerElevator = Assert.IsType<PassengerElevator>(elevator);
-        Assert.Equal(1, passengerElevator.Id.Value);
+        Assert.True(passengerElevator.Id.Value > 0);
         Assert.Equal(0, passengerElevator.CurrentFloor.Value);
         Assert.Equal(8, passengerElevator.MaximumPassengerCapacity);
     }
@@ -36,7 +35,6 @@ public class ElevatorFactoryTests
         IElevatorFactory factory = new ElevatorFactory();
         var configuration = new ElevatorConfiguration
         {
-            Id = 2,
             Type = ElevatorType.Freight,
             MinimumFloor = -1,
             MaximumFloor = 10,

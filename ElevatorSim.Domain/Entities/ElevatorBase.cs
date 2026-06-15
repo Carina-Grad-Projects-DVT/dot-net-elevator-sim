@@ -1,4 +1,5 @@
 using ElevatorSim.Domain.Enums;
+using ElevatorSim.Domain.Exceptions;
 using ElevatorSim.Domain.Interfaces;
 using ElevatorSim.Domain.ValueObjects;
 
@@ -29,15 +30,14 @@ public abstract class ElevatorBase : IElevator
     {
         if (minimumFloor > maximumFloor)
         {
-            throw new ArgumentException("Minimum floor cannot be greater than maximum floor.");
+            throw new InvalidFloorException(
+                $"Minimum floor ({minimumFloor}) cannot be greater than maximum floor ({maximumFloor})."
+            );
         }
 
         if (!FloorNumber.IsInRange(startingFloor.Value, minimumFloor, maximumFloor))
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(startingFloor),
-                $"Starting floor must be between {minimumFloor} and {maximumFloor}."
-            );
+            throw new InvalidFloorException(startingFloor.Value, minimumFloor, maximumFloor);
         }
 
         _minimumFloor = minimumFloor;
@@ -104,10 +104,7 @@ public abstract class ElevatorBase : IElevator
     {
         if (!FloorNumber.IsInRange(requestedFloor.Value, _minimumFloor, _maximumFloor))
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(requestedFloor),
-                $"Requested floor must be between {_minimumFloor} and {_maximumFloor}."
-            );
+            throw new InvalidFloorException(requestedFloor.Value, _minimumFloor, _maximumFloor);
         }
 
         if (requestedFloor == CurrentFloor && IsStationary)
@@ -172,10 +169,8 @@ public abstract class ElevatorBase : IElevator
     {
         if (tickCount < 1)
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(tickCount),
-                tickCount,
-                "Tick count must be 1 or more."
+            throw new InvalidElevatorOperationException(
+                $"Tick count must be 1 or more. Received {tickCount}."
             );
         }
 
@@ -192,7 +187,7 @@ public abstract class ElevatorBase : IElevator
     {
         if (MotionState == MotionState.Moving)
         {
-            throw new InvalidOperationException(
+            throw new InvalidElevatorOperationException(
                 "Doors cannot be opened while the elevator is in motion."
             );
         }

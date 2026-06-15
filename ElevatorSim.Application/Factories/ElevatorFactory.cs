@@ -1,4 +1,3 @@
-using System.Threading;
 using ElevatorSim.Application.Models;
 using ElevatorSim.Domain.Entities;
 using ElevatorSim.Domain.Enums;
@@ -50,7 +49,7 @@ public sealed class ElevatorFactory : IElevatorFactory
 
     private static ElevatorId CreateNextElevatorId()
     {
-        return new ElevatorId(Interlocked.Increment(ref _nextElevatorId));
+        return new ElevatorId(++_nextElevatorId);
     }
 
     private static IElevator CreatePassengerElevator(ElevatorConfiguration configuration)

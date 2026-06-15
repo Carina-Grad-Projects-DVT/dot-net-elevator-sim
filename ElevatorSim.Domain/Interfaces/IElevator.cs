@@ -1,12 +1,35 @@
+using ElevatorSim.Domain.Enums;
+using ElevatorSim.Domain.ValueObjects;
+
+namespace ElevatorSim.Domain.Interfaces;
+
 public interface IElevator
 {
     ElevatorId Id { get; }
     FloorNumber CurrentFloor { get; }
-    int MaximumCapacity { get; }
-    PassengerCount CurrentPassengers { get; }
+    Direction Direction { get; }
+    MotionState MotionState { get; }
+    DoorState DoorState { get; }
+    int PendingStopCount { get; }
+    bool IsStationary { get; }
 
+    // Method overload to pass data to ui
+    void RequestStop(FloorNumber requestedFloor);
+
+    // Method overload for code that already created a floor object
     void RequestStop(int floorValue);
+    void Step();
+    void AdvanceTicks(int tickCount);
+}
+
+public interface IPassengerElevator : IElevator
+{
+    PassengerCount CurrentPassengers { get; }
+    int MaximumPassengerCapacity { get; }
+    bool IsAtPassengerCapacity { get; }
+    bool CanBoard(PassengerCount passengers);
     void Board(PassengerCount passengers);
     void Disembark(PassengerCount passengers);
-    void Step();
 }
+
+public interface IFreightElevator : IElevator { }

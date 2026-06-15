@@ -1,4 +1,3 @@
-// ElevatorSim.Application/Factories/ElevatorFactory.cs
 using ElevatorSim.Application.Models;
 using ElevatorSim.Domain.Entities;
 using ElevatorSim.Domain.Enums;
@@ -17,7 +16,7 @@ public sealed class ElevatorFactory : IElevatorFactory
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
-        configuration.ValidateForCreation();
+        configuration.ElevatorCreationValidation();
 
         return configuration.Type switch
         {

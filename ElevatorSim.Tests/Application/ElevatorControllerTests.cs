@@ -1,7 +1,7 @@
 using ElevatorSim.Application.Controllers;
 using ElevatorSim.Domain.Enums;
 using ElevatorSim.Domain.ValueObjects;
-using ElevatorEntity = ElevatorSim.Domain.Entities.Elevator;
+using ElevatorEntity = ElevatorSim.Domain.Entities.PassengerElevator;
 
 namespace ElevatorSim.Tests.Application;
 
@@ -40,7 +40,7 @@ public class ElevatorControllerTests
         var status = controller.GetStatus();
 
         Assert.False(result.Success);
-        Assert.Contains("exceed maximum capacity", result.Message);
+        Assert.Contains("Passenger capacity exceeded", result.Message);
         Assert.Equal(4, status.CurrentPassengers);
     }
 
@@ -49,9 +49,9 @@ public class ElevatorControllerTests
         var elevator = new ElevatorEntity(
             id: new ElevatorId(1),
             startingFloor: FloorNumber.Create(0, -1, 10),
-            maximumCapacity: maximumCapacity,
             minimumFloor: -1,
-            maximumFloor: 10
+            maximumFloor: 10,
+            maximumPassengerCapacity: maximumCapacity
         );
 
         return new ElevatorController(elevator);

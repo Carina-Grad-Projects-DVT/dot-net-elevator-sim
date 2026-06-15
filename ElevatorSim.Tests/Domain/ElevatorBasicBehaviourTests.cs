@@ -1,7 +1,7 @@
 using ElevatorSim.Domain.Enums;
 using ElevatorSim.Domain.ValueObjects;
 using Xunit;
-using ElevatorEntity = ElevatorSim.Domain.Entities.Elevator;
+using ElevatorEntity = ElevatorSim.Domain.Entities.PassengerElevator;
 
 namespace ElevatorSim.Tests.Domain.Elevator;
 
@@ -13,15 +13,15 @@ public class ElevatorBasicBehaviorTests
         var elevator = new ElevatorEntity(
             id: new ElevatorId(1),
             startingFloor: FloorNumber.Create(0, -1, 10),
-            maximumCapacity: 8,
             minimumFloor: -1,
-            maximumFloor: 10
+            maximumFloor: 10,
+            maximumPassengerCapacity: 8
         );
 
         elevator.Board(new PassengerCount(3));
 
         Assert.Equal(3, elevator.CurrentPassengers.Value);
-        Assert.False(elevator.IsAtCapacity);
+        Assert.False(elevator.IsAtPassengerCapacity);
     }
 
     [Fact]
@@ -30,9 +30,9 @@ public class ElevatorBasicBehaviorTests
         var elevator = new ElevatorEntity(
             id: new ElevatorId(1),
             startingFloor: FloorNumber.Create(0, -1, 10),
-            maximumCapacity: 5,
             minimumFloor: -1,
-            maximumFloor: 10
+            maximumFloor: 10,
+            maximumPassengerCapacity: 5
         );
 
         elevator.Board(new PassengerCount(4));
@@ -41,27 +41,26 @@ public class ElevatorBasicBehaviorTests
             elevator.Board(new PassengerCount(2))
         );
 
-        Assert.Contains("exceed maximum capacity", exception.Message);
+        Assert.Contains("Passenger capacity exceeded", exception.Message);
         Assert.Equal(4, elevator.CurrentPassengers.Value);
     }
 
     [Fact]
-    public void Open_Doors_While_Elevator_Is_Moving_Throws_Invalid_Operation_Exception()
+    public void Requesting_Stop_At_Current_Floor_Opens_Doors_When_Stationary()
     {
         var elevator = new ElevatorEntity(
             id: new ElevatorId(1),
             startingFloor: FloorNumber.Create(0, -1, 10),
-            maximumCapacity: 8,
             minimumFloor: -1,
-            maximumFloor: 10
+            maximumFloor: 10,
+            maximumPassengerCapacity: 8
         );
 
-        elevator.SetMovementState(ElevatorDirection.Up, MotionState.Moving);
+        elevator.RequestStop(0);
 
-        var exception = Assert.Throws<InvalidOperationException>(() => elevator.OpenDoors());
-
-        Assert.Contains("cannot be opened", exception.Message);
-        Assert.Equal(DoorState.Closed, elevator.DoorState);
+        Assert.Equal(DoorState.Open, elevator.DoorState);
+        Assert.Equal(MotionState.Stationary, elevator.MotionState);
+        Assert.Equal(ElevatorDirection.None, elevator.Direction);
     }
 
     [Fact]
@@ -71,12 +70,12 @@ public class ElevatorBasicBehaviorTests
         var elevator = new ElevatorEntity(
             id: new ElevatorId(2),
             startingFloor: FloorNumber.Create(0, -1, 10),
-            maximumCapacity: 8,
             minimumFloor: -1,
-            maximumFloor: 10
+            maximumFloor: 10,
+            maximumPassengerCapacity: 8
         );
 
-        elevator.OpenDoors();
+        elevator.RequestStop(0);
         elevator.RequestStop(2);
 
         // Act - tick 1 (should close doors only)

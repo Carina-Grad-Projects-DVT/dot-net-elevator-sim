@@ -56,7 +56,7 @@ public class ElevatorBasicBehaviorTests
             maximumFloor: 10
         );
 
-        elevator.SetMovementState(Direction.Up, MotionState.Moving);
+        elevator.SetMovementState(ElevatorDirection.Up, MotionState.Moving);
 
         var exception = Assert.Throws<InvalidOperationException>(() => elevator.OpenDoors());
 
@@ -86,7 +86,7 @@ public class ElevatorBasicBehaviorTests
         Assert.Equal(FloorNumber.Create(0, -1, 10), elevator.CurrentFloor);
         Assert.Equal(DoorState.Closed, elevator.DoorState);
         Assert.Equal(MotionState.Stationary, elevator.MotionState);
-        Assert.Equal(Direction.None, elevator.Direction);
+        Assert.Equal(ElevatorDirection.None, elevator.Direction);
 
         // Act - tick 2 initialize movement
         elevator.Step();
@@ -94,6 +94,6 @@ public class ElevatorBasicBehaviorTests
         // Assert - moved one floor
         Assert.Equal(FloorNumber.Create(1, -1, 10), elevator.CurrentFloor);
         Assert.Equal(MotionState.Moving, elevator.MotionState);
-        Assert.Equal(Direction.Up, elevator.Direction);
+        Assert.Equal(ElevatorDirection.Up, elevator.Direction);
     }
 }

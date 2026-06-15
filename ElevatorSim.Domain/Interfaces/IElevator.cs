@@ -7,7 +7,7 @@ public interface IElevator
 {
     ElevatorId Id { get; }
     FloorNumber CurrentFloor { get; }
-    Direction Direction { get; }
+    ElevatorDirection Direction { get; }
     MotionState MotionState { get; }
     DoorState DoorState { get; }
     int PendingStopCount { get; }

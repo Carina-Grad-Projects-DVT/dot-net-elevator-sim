@@ -2,6 +2,7 @@ namespace ElevatorSim.Domain.ValueObjects;
 
 /// <summary>
 /// Strongly typed floor number validated against a configurable building range.
+/// Reusable across all elevator categories, including passenger and freight elevators.
 /// Supports basement floors including negative values (example: -1 = B).
 /// </summary>
 public readonly record struct FloorNumber : IComparable<FloorNumber>
@@ -41,7 +42,7 @@ public readonly record struct FloorNumber : IComparable<FloorNumber>
     }
 
     /// <summary>
-    /// Checks whether a raw floor value is within the configured range.
+    /// Checks whether a raw floor value is within a configured building range.
     /// </summary>
     public static bool IsInRange(int value, int minimumFloor, int maximumFloor) =>
         minimumFloor <= maximumFloor && value >= minimumFloor && value <= maximumFloor;
@@ -49,7 +50,7 @@ public readonly record struct FloorNumber : IComparable<FloorNumber>
     public int CompareTo(FloorNumber other) => Value.CompareTo(other.Value);
 
     /// <summary>
-    /// Formats display value: basement floors as B1/B2 etc, ground floor as G, upper floors as numeric.
+    /// Formats display value: basement floors as B1/B2, ground floor as G, upper floors as numeric.
     /// </summary>
     public override string ToString() =>
         Value switch

@@ -1,5 +1,5 @@
-using ElevatorSim.Domain.Abstractions;
 using ElevatorSim.Domain.Enums;
+using ElevatorSim.Domain.Interfaces;
 using ElevatorSim.Domain.ValueObjects;
 
 namespace ElevatorSim.Domain.Entities;
@@ -45,14 +45,16 @@ public abstract class ElevatorBase : IElevator
 
         Id = id;
         CurrentFloor = startingFloor;
-        Direction = Direction.None;
+        Direction = ElevatorDirection.None;
         MotionState = MotionState.Stationary;
         DoorState = DoorState.Closed;
     }
+
     /// <summary>
     /// Gets the elevator identifier.
     /// </summary>
     public ElevatorId Id { get; }
+
     /// <summary>
     /// Gets the elevator's current floor.
     /// </summary>
@@ -61,40 +63,43 @@ public abstract class ElevatorBase : IElevator
     /// <summary>
     /// Gets the elevator's current direction of travel.
     /// </summary>
-    public Direction Direction { get; protected set; }
+    public ElevatorDirection Direction { get; protected set; }
+
     /// <summary>
     /// Gets whether the elevator is moving or stationary.
     /// </summary>
     public MotionState MotionState { get; protected set; }
+
     /// <summary>
     /// Gets the elevator door state.
     /// </summary>
     public DoorState DoorState { get; protected set; }
+
     /// <summary>
     /// Gets the number of pending queued stops.
     /// </summary>
-
     public int PendingStopCount => _pendingStops.Count;
 
     /// <summary>
     /// Gets a value indicating whether the elevator is currently stationary.
     /// </summary>
-    public bool IsStationary => MotionState == MotionState.Stationary && Direction == Direction.None;
+    public bool IsStationary =>
+        MotionState == MotionState.Stationary && Direction == ElevatorDirection.None;
+
     /// <summary>
     /// Queues a stop request by raw floor value.
     /// </summary>
     /// <param name="floorValue">Requested stop floor value.</param>
-
     public void RequestStop(int floorValue)
     {
         var requestedFloor = FloorNumber.Create(floorValue, _minimumFloor, _maximumFloor);
         RequestStop(requestedFloor);
     }
+
     /// <summary>
     /// Queues a stop request by floor number.
     /// </summary>
     /// <param name="requestedFloor">Requested stop floor.</param>
-
     public void RequestStop(FloorNumber requestedFloor)
     {
         if (!FloorNumber.IsInRange(requestedFloor.Value, _minimumFloor, _maximumFloor))
@@ -118,16 +123,16 @@ public abstract class ElevatorBase : IElevator
 
         _pendingStops.Enqueue(requestedFloor);
     }
+
     /// <summary>
     /// Advances the elevator simulation by one tick.
     /// </summary>
-
     public void Step()
     {
         if (_pendingStops.Count == 0)
         {
             MotionState = MotionState.Stationary;
-            Direction = Direction.None;
+            Direction = ElevatorDirection.None;
             return;
         }
 
@@ -145,10 +150,11 @@ public abstract class ElevatorBase : IElevator
             return;
         }
 
-        Direction = targetFloor.Value > CurrentFloor.Value ? Direction.Up : Direction.Down;
+        Direction =
+            targetFloor.Value > CurrentFloor.Value ? ElevatorDirection.Up : ElevatorDirection.Down;
         MotionState = MotionState.Moving;
 
-        var floorChange = Direction == Direction.Up ? 1 : -1;
+        var floorChange = Direction == ElevatorDirection.Up ? 1 : -1;
         var nextFloorValue = CurrentFloor.Value + floorChange;
         CurrentFloor = FloorNumber.Create(nextFloorValue, _minimumFloor, _maximumFloor);
 
@@ -157,11 +163,11 @@ public abstract class ElevatorBase : IElevator
             ArriveAtTargetFloor();
         }
     }
+
     /// <summary>
     /// Advances the elevator simulation by a number of ticks.
     /// </summary>
     /// <param name="tickCount">Number of ticks to process.</param>
-
     public void AdvanceTicks(int tickCount)
     {
         if (tickCount < 1)
@@ -178,15 +184,17 @@ public abstract class ElevatorBase : IElevator
             Step();
         }
     }
+
     /// <summary>
     /// Opens the elevator doors.
     /// </summary>
-
     protected void OpenDoors()
     {
         if (MotionState == MotionState.Moving)
         {
-            throw new InvalidOperationException("Doors cannot be opened while the elevator is in motion.");
+            throw new InvalidOperationException(
+                "Doors cannot be opened while the elevator is in motion."
+            );
         }
 
         DoorState = DoorState.Open;
@@ -204,15 +212,13 @@ public abstract class ElevatorBase : IElevator
     {
         _pendingStops.Dequeue();
         MotionState = MotionState.Stationary;
-        Direction = Direction.None;
+        Direction = ElevatorDirection.None;
         OpenDoors();
         OnArrivedAtFloor();
     }
+
     /// <summary>
     /// Executes custom logic when the elevator arrives at a target floor.
     /// </summary>
-
-    protected virtual void OnArrivedAtFloor()
-    {
-    }
+    protected virtual void OnArrivedAtFloor() { }
 }

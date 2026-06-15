@@ -21,7 +21,7 @@ public sealed record ElevatorStatus(
     int ElevatorId,
     int CurrentFloor,
     string CurrentFloorDisplay,
-    Direction Direction,
+    ElevatorDirection Direction,
     MotionState MotionState,
     DoorState DoorState,
     int CurrentPassengers,

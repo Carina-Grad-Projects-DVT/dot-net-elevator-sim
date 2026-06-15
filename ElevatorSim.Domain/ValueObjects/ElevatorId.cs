@@ -1,7 +1,7 @@
 namespace ElevatorSim.Domain.ValueObjects;
 
 /// <summary>
-/// Strongly typed identifier for an elevator.
+/// Strongly typed identifier for an elevator, independent of elevator category.
 /// </summary>
 public readonly record struct ElevatorId
 {
@@ -31,6 +31,5 @@ public readonly record struct ElevatorId
     /// <summary>
     /// Returns a display-friendly label for the elevator.
     /// </summary>
-    // Will print elevatorId as "E3" for example
     public override string ToString() => $"E{Value}";
 }

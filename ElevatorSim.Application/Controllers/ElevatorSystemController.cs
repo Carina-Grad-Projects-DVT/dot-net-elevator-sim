@@ -54,4 +54,16 @@ public class ElevatorSystemController
             return CommandResult.Fail(exception.Message);
         }
     }
+
+    public CommandResult AddElevator(IElevator elevator)
+    {
+        // Check if an existing elevator already has this id
+        if (_elevatorFleet.Any(existingElevator => existingElevator.Id == elevator.Id))
+        {
+            return CommandResult.Fail($"Elevator {elevator.Id.Value} already exists in fleet.");
+        }
+
+        _elevatorFleet.Add(elevator);
+        return CommandResult.Ok($"Elevator {elevator.Id.Value} added.");
+    }
 }

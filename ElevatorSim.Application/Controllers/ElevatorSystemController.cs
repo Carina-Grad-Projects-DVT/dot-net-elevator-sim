@@ -66,4 +66,20 @@ public class ElevatorSystemController
         _elevatorFleet.Add(elevator);
         return CommandResult.Ok($"Elevator {elevator.Id.Value} added.");
     }
+
+    public CommandResult RemoveElevator(int elevatorId)
+    {
+        // Search for an existing elevator of this value
+        // Return the first match or the default of null
+        var elevator = _elevatorFleet.FirstOrDefault(existingElevator =>
+            existingElevator.Id.Value == elevatorId
+        );
+        if (elevator is null)
+        {
+            return CommandResult.Fail($"Elevator {elevatorId} not found.");
+        }
+
+        _elevatorFleet.Remove(elevator);
+        return CommandResult.Ok($"Elevator {elevatorId} removed.");
+    }
 }

@@ -43,4 +43,21 @@ public class NearestElevatorDispatchServiceTests
         Assert.Equal(DispatchOutcome.Assigned, result.Outcome);
         Assert.Equal(2, result.AssignedElevatorId);
     }
+
+    private static IPassengerElevator CreatePassengerElevator(
+        int id,
+        int currentFloor,
+        int maximumCapacity = 8,
+        int minimumFloor = -1,
+        int maximumFloor = 10
+    )
+    {
+        return new PassengerElevatorEntity(
+            new ElevatorId(id),
+            FloorNumber.Create(currentFloor, minimumFloor, maximumFloor),
+            minimumFloor,
+            maximumFloor,
+            maximumCapacity
+        );
+    }
 }

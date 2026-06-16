@@ -7,6 +7,7 @@ namespace ElevatorSim.Application.Controllers;
 
 public class ElevatorSystemController
 {
+    // Using fleet to follow existing logistics theme
     private readonly List<IElevator> _elevatorFleet;
     private readonly IDispatchService _dispatchService;
 
@@ -36,4 +37,21 @@ public class ElevatorSystemController
 
     public DispatchResult RequestPickup(PickupRequest request) =>
         _dispatchService.Dispatch(ElevatorFleet, request);
+
+    public CommandResult StepAll()
+    {
+        try
+        {
+            foreach (var elevator in _elevatorFleet)
+            {
+                elevator.Step();
+            }
+
+            return CommandResult.Ok("Advanced all elevators by 1 tick.");
+        }
+        catch (Exception exception)
+        {
+            return CommandResult.Fail(exception.Message);
+        }
+    }
 }

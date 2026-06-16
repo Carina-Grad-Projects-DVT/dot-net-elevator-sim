@@ -8,7 +8,7 @@ namespace ElevatorSim.Application.Controllers;
 /// <summary>
 /// Acts as a middle layer between Elevator commands and ui
 /// </summary>
-public sealed class ElevatorController
+public class ElevatorController
 {
     private readonly IElevator _elevator;
 

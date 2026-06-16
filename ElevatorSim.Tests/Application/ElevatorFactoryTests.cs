@@ -39,9 +39,10 @@ public class ElevatorFactoryTests
             MinimumFloor = -1,
             MaximumFloor = 10,
             StartingFloor = 0,
+            MaximumFreightLoadKg = 1000m,
         };
 
         var exception = Assert.Throws<NotSupportedException>(() => factory.Create(configuration));
-        Assert.Contains("Freight elevator creation is not implemented yet", exception.Message);
+        Assert.Contains("Freight elevator creation is not available yet", exception.Message);
     }
 }

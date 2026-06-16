@@ -3,7 +3,7 @@ using ElevatorSim.Domain.ValueObjects;
 
 namespace ElevatorSim.Domain.Entities;
 
-public sealed class PassengerElevator : ElevatorBase, IPassengerElevator
+public class PassengerElevator : ElevatorBase, IPassengerElevator
 {
     public int MaximumPassengerCapacity { get; }
     public PassengerCount CurrentPassengers { get; private set; } = PassengerCount.Zero;

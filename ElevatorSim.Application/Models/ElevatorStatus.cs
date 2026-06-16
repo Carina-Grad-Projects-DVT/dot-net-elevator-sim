@@ -21,7 +21,7 @@ namespace ElevatorSim.Application.Models;
 /// <param name="MaximumLoadKg">Maximum freight load in kilograms for freight elevators.</param>
 /// <param name="IsAtLoadCapacity">Whether a freight elevator is currently at load capacity.</param>
 /// <param name="IsStationary">Is elevator currently stationary?</param>
-public sealed record ElevatorStatus(
+public record ElevatorStatus(
     int ElevatorId,
     ElevatorType ElevatorType,
     int CurrentFloor,

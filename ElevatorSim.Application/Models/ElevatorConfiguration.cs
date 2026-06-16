@@ -1,20 +1,15 @@
-using ElevatorSim.Domain.Enums;
-
 namespace ElevatorSim.Application.Models;
 
 /// <summary>
-/// Configuration used by the factory to create an elevator instance.
+/// Base configuration for elevator creation.
 /// </summary>
 public record ElevatorConfiguration
 {
-    public required ElevatorType Type { get; init; }
     public required int MinimumFloor { get; init; }
     public required int MaximumFloor { get; init; }
     public required int StartingFloor { get; init; }
-    public int? MaximumPassengerCapacity { get; init; }
-    public decimal? MaximumFreightLoadKg { get; init; }
 
-    public void ElevatorCreationValidation()
+    public virtual void ElevatorCreationValidation()
     {
         if (MinimumFloor > MaximumFloor)
         {
@@ -28,35 +23,47 @@ public record ElevatorConfiguration
                 $"StartingFloor must be between {MinimumFloor} and {MaximumFloor}."
             );
         }
+    }
+}
 
-        switch (Type)
+/// <summary>
+/// Configuration specific to passenger elevators.
+/// </summary>
+public record PassengerElevatorConfiguration : ElevatorConfiguration
+{
+    public int MaximumPassengerCapacity { get; init; }
+
+    public override void ElevatorCreationValidation()
+    {
+        base.ElevatorCreationValidation();
+
+        if (MaximumPassengerCapacity < 1)
         {
-            case ElevatorType.Passenger:
-                if (MaximumPassengerCapacity is null || MaximumPassengerCapacity.Value < 1)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(MaximumPassengerCapacity),
-                        "MaximumPassengerCapacity must be set and greater than 0 passengers."
-                    );
-                }
-                break;
+            throw new ArgumentOutOfRangeException(
+                nameof(MaximumPassengerCapacity),
+                "MaximumPassengerCapacity must be greater than 0 passengers."
+            );
+        }
+    }
+}
 
-            case ElevatorType.Freight:
-                if (MaximumFreightLoadKg is null || MaximumFreightLoadKg.Value <= 0)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(MaximumFreightLoadKg),
-                        "MaximumFreightLoadKg must be set and greater than 0."
-                    );
-                }
-                break;
+/// <summary>
+/// Configuration specific to freight elevators.
+/// </summary>
+public record FreightElevatorConfiguration : ElevatorConfiguration
+{
+    public decimal MaximumFreightLoadKg { get; init; }
 
-            default:
-                throw new ArgumentOutOfRangeException(
-                    nameof(Type),
-                    Type,
-                    "Unsupported elevator type."
-                );
+    public override void ElevatorCreationValidation()
+    {
+        base.ElevatorCreationValidation();
+
+        if (MaximumFreightLoadKg <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(MaximumFreightLoadKg),
+                "MaximumFreightLoadKg must be greater than 0."
+            );
         }
     }
 }

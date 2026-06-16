@@ -5,7 +5,7 @@ namespace ElevatorSim.Domain.Entities;
 /// <summary>
 /// Placeholder freight elevator implementation.
 /// </summary>
-public sealed class FreightElevator : ElevatorBase
+public class FreightElevator : ElevatorBase
 {
     /// <summary>
     /// Initializes a new placeholder freight elevator.

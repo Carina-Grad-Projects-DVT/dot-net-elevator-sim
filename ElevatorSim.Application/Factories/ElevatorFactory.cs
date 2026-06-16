@@ -10,24 +10,24 @@ namespace ElevatorSim.Application.Factories;
 /// Factory for elevator creation.
 /// Only passenger elevators are implemented for now
 /// </summary>
-public sealed class ElevatorFactory : IElevatorFactory
+public class ElevatorFactory : IElevatorFactory
 {
     public IElevator Create(ElevatorConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         configuration.ElevatorCreationValidation();
-
-        return configuration.Type switch
+        return configuration switch
         {
-            ElevatorType.Passenger => CreatePassengerElevator(configuration),
-            ElevatorType.Freight => throw new NotSupportedException(
+            PassengerElevatorConfiguration passengerConfiguration => CreatePassengerElevator(
+                passengerConfiguration
+            ),
+            FreightElevatorConfiguration => throw new NotSupportedException(
                 "Freight elevator creation is not available yet."
             ),
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(configuration.Type),
-                configuration.Type,
-                "Unsupported elevator type."
+            _ => throw new ArgumentException(
+                "Unsupported elevator configuration type.",
+                nameof(configuration)
             ),
         };
     }
@@ -52,16 +52,8 @@ public sealed class ElevatorFactory : IElevatorFactory
         return new ElevatorId(++_nextElevatorId);
     }
 
-    private static IElevator CreatePassengerElevator(ElevatorConfiguration configuration)
+    private static IElevator CreatePassengerElevator(PassengerElevatorConfiguration configuration)
     {
-        if (configuration.MaximumPassengerCapacity is null)
-        {
-            throw new ArgumentException(
-                "MaximumPassengerCapacity is required",
-                nameof(configuration)
-            );
-        }
-
         return new PassengerElevator(
             id: CreateNextElevatorId(),
             startingFloor: FloorNumber.Create(
@@ -71,7 +63,7 @@ public sealed class ElevatorFactory : IElevatorFactory
             ),
             minimumFloor: configuration.MinimumFloor,
             maximumFloor: configuration.MaximumFloor,
-            maximumPassengerCapacity: configuration.MaximumPassengerCapacity.Value
+            maximumPassengerCapacity: configuration.MaximumPassengerCapacity
         );
     }
 }

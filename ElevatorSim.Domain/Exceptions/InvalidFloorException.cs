@@ -3,7 +3,7 @@ namespace ElevatorSim.Domain.Exceptions;
 /// <summary>
 /// Exception thrown when a floor value is outside the configured range.
 /// </summary>
-public sealed class InvalidFloorException : Exception
+public class InvalidFloorException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the InvalidFloorException class.

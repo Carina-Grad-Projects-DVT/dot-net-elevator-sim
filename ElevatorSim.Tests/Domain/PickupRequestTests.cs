@@ -15,13 +15,12 @@ public class PickupRequestTests
     }
 
     [Fact]
-    public void Constructor_With_None_Direction_Throws()
+    public void Create_With_Floor_Only_Sets_Direction_To_None()
     {
-        var floor = FloorNumber.Create(0, -1, 10);
+        var request = PickupRequest.Create(2, -1, 10);
 
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new PickupRequest(floor, ElevatorDirection.None)
-        );
+        Assert.Equal(2, request.Floor.Value);
+        Assert.Equal(ElevatorDirection.None, request.Direction);
     }
 
     [Fact]

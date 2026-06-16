@@ -14,6 +14,7 @@ public record PickupRequest
 
     /// <summary>
     /// Gets the requested direction of travel for pickup.
+    /// If set to <see cref="ElevatorDirection.None"/>, the direction is unspecified.
     /// </summary>
     public ElevatorDirection Direction { get; }
 
@@ -21,18 +22,9 @@ public record PickupRequest
     /// Initializes a pickup request.
     /// </summary>
     /// <param name="floor">Requested pickup floor.</param>
-    /// <param name="direction">Requested travel direction.</param>
+    /// <param name="direction">Requested travel direction. Use ElevatorDirection.None when unspecified.</param>
     public PickupRequest(FloorNumber floor, ElevatorDirection direction)
     {
-        if (direction == ElevatorDirection.None)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(direction),
-                direction,
-                "Pickup request direction must be either Up or Down."
-            );
-        }
-
         Floor = floor;
         Direction = direction;
     }
@@ -50,4 +42,13 @@ public record PickupRequest
         int minimumFloor,
         int maximumFloor
     ) => new(FloorNumber.Create(floorValue, minimumFloor, maximumFloor), direction);
+
+    /// <summary>
+    /// Creates a pickup request from values validated against floor range, with unspecified direction.
+    /// </summary>
+    /// <param name="floorValue">Requested floor value.</param>
+    /// <param name="minimumFloor">Minimum supported floor.</param>
+    /// <param name="maximumFloor">Maximum supported floor.</param>
+    public static PickupRequest Create(int floorValue, int minimumFloor, int maximumFloor) =>
+        new(FloorNumber.Create(floorValue, minimumFloor, maximumFloor), ElevatorDirection.None);
 }

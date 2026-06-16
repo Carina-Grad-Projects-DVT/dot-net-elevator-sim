@@ -4,9 +4,8 @@ using ElevatorSim.Application.Models;
 using ElevatorSim.Domain.Enums;
 
 var factory = new ElevatorFactory();
-var elevatorConfiguration = new ElevatorConfiguration
+var elevatorConfiguration = new PassengerElevatorConfiguration
 {
-    Type = ElevatorType.Passenger,
     MinimumFloor = -1,
     MaximumFloor = 10,
     StartingFloor = 0,

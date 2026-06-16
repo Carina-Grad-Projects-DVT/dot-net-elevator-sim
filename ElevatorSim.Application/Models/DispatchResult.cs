@@ -37,6 +37,21 @@ public record DispatchResult(
             EstimatedArrivalTicks: estimatedArrivalTicks
         );
 
+    public static DispatchResult Queued(
+        int requestFloor,
+        ElevatorDirection requestDirection,
+        int elevatorId,
+        string message
+    ) =>
+        new(
+            Outcome: DispatchOutcome.Queued,
+            Message: message,
+            RequestFloor: requestFloor,
+            RequestDirection: requestDirection,
+            AssignedElevatorId: elevatorId,
+            EstimatedArrivalTicks: null
+        );
+
     public static DispatchResult Rejected(
         int requestFloor,
         ElevatorDirection requestDirection,

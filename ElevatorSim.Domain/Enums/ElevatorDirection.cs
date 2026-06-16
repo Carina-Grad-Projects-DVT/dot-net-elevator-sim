@@ -3,7 +3,7 @@ namespace ElevatorSim.Domain.Enums;
 /// <summary>
 /// Represents an elevator's current direction of motion.
 /// </summary>
-public enum Direction
+public enum ElevatorDirection
 {
     /// <summary>
     /// Elevator is at a stand still.

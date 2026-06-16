@@ -1,16 +1,19 @@
 ﻿using ElevatorSim.Application.Controllers;
+using ElevatorSim.Application.Factories;
 using ElevatorSim.Application.Models;
-using ElevatorSim.Domain.Entities;
-using ElevatorSim.Domain.ValueObjects;
+using ElevatorSim.Domain.Enums;
 
-var elevator = new Elevator(
-    id: new ElevatorId(1),
-    startingFloor: FloorNumber.Create(0, -1, 10),
-    maximumCapacity: 8,
-    minimumFloor: -1,
-    maximumFloor: 10
-);
+var factory = new ElevatorFactory();
+var elevatorConfiguration = new ElevatorConfiguration
+{
+    Type = ElevatorType.Passenger,
+    MinimumFloor = -1,
+    MaximumFloor = 10,
+    StartingFloor = 0,
+    MaximumPassengerCapacity = 8,
+};
 
+var elevator = factory.Create(elevatorConfiguration);
 var controller = new ElevatorController(elevator);
 
 Console.WriteLine("ElevatorSim Console");
@@ -110,10 +113,26 @@ void PrintResult(CommandResult result)
 void PrintStatus()
 {
     var status = controller.GetStatus();
+
+    var capacitySummary = status.ElevatorType switch
+    {
+        ElevatorType.Passenger =>
+            $"passengers: {status.CurrentPassengers ?? 0}/{status.MaximumCapacity ?? 0}",
+        ElevatorType.Freight =>
+            $"load: {status.CurrentLoadKg?.ToString("0.##") ?? "0"}/{status.MaximumLoadKg?.ToString("0.##") ?? "0"} kg",
+        _ => "capacity: -",
+    };
+
+    var capacityState = status.ElevatorType switch
+    {
+        ElevatorType.Passenger => $"at capacity: {status.IsAtCapacity ?? false}",
+        ElevatorType.Freight => $"at load capacity: {status.IsAtLoadCapacity ?? false}",
+        _ => "capacity state: -",
+    };
     Console.WriteLine(
-        $"E{status.ElevatorId} | floor: {status.CurrentFloorDisplay} ({status.CurrentFloor}) | "
+        $"E{status.ElevatorId} [{status.ElevatorType}] | floor: {status.CurrentFloorDisplay} ({status.CurrentFloor}) | "
             + $"dir: {status.Direction} | motion: {status.MotionState} | doors: {status.DoorState} | "
-            + $"passengers: {status.CurrentPassengers}/{status.MaximumCapacity} | pending stops: {status.PendingStopCount}"
+            + $"{capacitySummary} | {capacityState} | pending stops: {status.PendingStopCount}"
     );
 }
 

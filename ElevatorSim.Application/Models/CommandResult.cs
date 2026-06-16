@@ -1,7 +1,7 @@
 namespace ElevatorSim.Application.Models;
 
 // Controller can return this instead of throwing errors in "UI".
-public sealed record CommandResult(bool Success, string Message)
+public record CommandResult(bool Success, string Message)
 {
     public static CommandResult Ok(string message) => new(true, message);
 

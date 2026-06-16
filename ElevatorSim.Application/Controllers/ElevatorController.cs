@@ -1,5 +1,6 @@
 using ElevatorSim.Application.Models;
-using ElevatorSim.Domain.Entities;
+using ElevatorSim.Domain.Exceptions;
+using ElevatorSim.Domain.Interfaces;
 using ElevatorSim.Domain.ValueObjects;
 
 namespace ElevatorSim.Application.Controllers;
@@ -7,15 +8,15 @@ namespace ElevatorSim.Application.Controllers;
 /// <summary>
 /// Acts as a middle layer between Elevator commands and ui
 /// </summary>
-public sealed class ElevatorController
+public class ElevatorController
 {
-    private readonly Elevator _elevator;
+    private readonly IElevator _elevator;
 
     /// <summary>
     /// Initializes a new controller for a single elevator instance.
     /// </summary>
     /// <param name="elevator">Elevator aggregate to control.</param>
-    public ElevatorController(Elevator elevator)
+    public ElevatorController(IElevator elevator)
     {
         _elevator = elevator ?? throw new ArgumentNullException(nameof(elevator));
     }
@@ -36,21 +37,35 @@ public sealed class ElevatorController
     /// Boards passengers into the elevator.
     /// </summary>
     /// <param name="passengerCount">Number of boarding passengers.</param>
-    public CommandResult Board(int passengerCount) =>
-        Execute(
-            () => _elevator.Board(new PassengerCount(passengerCount)),
+    public CommandResult Board(int passengerCount)
+    {
+        if (_elevator is not IPassengerElevator passengerElevator)
+        {
+            return CommandResult.Fail("Boarding is only supported for passenger elevators.");
+        }
+
+        return Execute(
+            () => passengerElevator.Board(new PassengerCount(passengerCount)),
             $"Boarded {passengerCount} passenger(s)."
         );
+    }
 
     /// <summary>
     /// Let's passengers off from the elevator.
     /// </summary>
     /// <param name="passengerCount">Number of disembarking passengers.</param>
-    public CommandResult Disembark(int passengerCount) =>
-        Execute(
-            () => _elevator.Disembark(new PassengerCount(passengerCount)),
+    public CommandResult Disembark(int passengerCount)
+    {
+        if (_elevator is not IPassengerElevator passengerElevator)
+        {
+            return CommandResult.Fail("Disembarking is only supported for passenger elevators.");
+        }
+
+        return Execute(
+            () => passengerElevator.Disembark(new PassengerCount(passengerCount)),
             $"Disembarked {passengerCount} passenger(s)."
         );
+    }
 
     /// <summary>
     /// Advances the elevator simulation by one tick.
@@ -74,6 +89,15 @@ public sealed class ElevatorController
         {
             action();
             return CommandResult.Ok(successMessage);
+        }
+        catch (Exception exception)
+            when (exception
+                    is InvalidFloorException
+                        or InvalidElevatorOperationException
+                        or CapacityExceededException
+            )
+        {
+            return CommandResult.Fail(exception.Message);
         }
         catch (Exception exception)
         {

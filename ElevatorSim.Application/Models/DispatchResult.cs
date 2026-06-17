@@ -40,7 +40,6 @@ public record DispatchResult(
     public static DispatchResult Queued(
         int requestFloor,
         ElevatorDirection requestDirection,
-        int elevatorId,
         string message
     ) =>
         new(
@@ -48,7 +47,7 @@ public record DispatchResult(
             Message: message,
             RequestFloor: requestFloor,
             RequestDirection: requestDirection,
-            AssignedElevatorId: elevatorId,
+            AssignedElevatorId: null,
             EstimatedArrivalTicks: null
         );
 

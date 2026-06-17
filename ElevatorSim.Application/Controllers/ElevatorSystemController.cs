@@ -10,8 +10,11 @@ public class ElevatorSystemController
     // Using fleet to follow existing logistics theme
     private readonly List<IElevator> _elevatorFleet;
     private readonly IDispatchService _dispatchService;
+    private readonly Queue<PickupRequest> _waitingPickupRequests = new();
 
     public IReadOnlyList<IElevator> ElevatorFleet => _elevatorFleet;
+
+    public int QueuedPickupRequestCount => _waitingPickupRequests.Count;
 
     public ElevatorSystemController(
         IEnumerable<IElevator> initialFleet,
@@ -35,8 +38,28 @@ public class ElevatorSystemController
     public IReadOnlyList<ElevatorStatus> GetFleetStatus() =>
         _elevatorFleet.Select(ElevatorStatus.From).ToList();
 
-    public DispatchResult RequestPickup(PickupRequest request) =>
-        _dispatchService.Dispatch(ElevatorFleet, request);
+    public DispatchResult RequestPickup(PickupRequest request)
+    // Definition for merge :
+    // Two requests are considered the same identity if they have the same floor & direction
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        if (TryMergeQueuedRequest(request, out var mergedQueuedRequest))
+        {
+            return DispatchResult.Queued(
+                requestFloor: mergedQueuedRequest.Floor.Value,
+                requestDirection: mergedQueuedRequest.Direction,
+                message: $"Merged with existing queued request at floor {mergedQueuedRequest.Floor.Value}. Waiting passengers now {mergedQueuedRequest.WaitingPassengerCount}."
+            );
+        }
+        var result = _dispatchService.Dispatch(ElevatorFleet, request);
+        if (result.Outcome == DispatchOutcome.Queued)
+        {
+            _waitingPickupRequests.Enqueue(request);
+        }
+
+        return result;
+    }
 
     public CommandResult StepAll()
     {
@@ -47,6 +70,7 @@ public class ElevatorSystemController
                 elevator.Step();
             }
 
+            TryDispatchQueuedRequests();
             return CommandResult.Ok("Advanced all elevators by 1 tick.");
         }
         catch (Exception exception)
@@ -54,6 +78,89 @@ public class ElevatorSystemController
             return CommandResult.Fail(exception.Message);
         }
     }
+
+    private void TryDispatchQueuedRequests()
+    {
+        if (_waitingPickupRequests.Count == 0)
+        {
+            return;
+        }
+
+        var remainingRequests = new Queue<PickupRequest>();
+        while (_waitingPickupRequests.Count > 0)
+        {
+            var request = _waitingPickupRequests.Dequeue();
+            var result = _dispatchService.Dispatch(ElevatorFleet, request);
+            if (result.Outcome == DispatchOutcome.Queued)
+            {
+                remainingRequests.Enqueue(request);
+            }
+        }
+
+        while (remainingRequests.Count > 0)
+        {
+            _waitingPickupRequests.Enqueue(remainingRequests.Dequeue());
+        }
+    }
+
+    //  Check if the incoming pickup request matches any requests already in the queue
+    private bool TryMergeQueuedRequest(PickupRequest request, out PickupRequest mergedRequest)
+    {
+        // Ensures param is always valid even if a merge doesn't happen
+        mergedRequest = request;
+
+        if (_waitingPickupRequests.Count == 0)
+        {
+            return false;
+        }
+
+        var queuedRequests = _waitingPickupRequests.ToList();
+
+        var matchingEntries = queuedRequests
+            .Select((queuedRequest, index) => new { queuedRequest, index })
+            .Where(entry => IsSamePickupIdentity(entry.queuedRequest, request))
+            .ToList();
+
+        if (matchingEntries.Count == 0)
+        {
+            return false;
+        }
+
+        var mergedWaitingPassengerCount = request.WaitingPassengerCount;
+        foreach (var entry in matchingEntries)
+        {
+            mergedWaitingPassengerCount = checked(
+                mergedWaitingPassengerCount + entry.queuedRequest.WaitingPassengerCount
+            );
+        }
+
+        mergedRequest = new PickupRequest(
+            request.Floor,
+            new PassengerCount(mergedWaitingPassengerCount),
+            request.Direction
+        );
+
+        var firstMatchingIndex = matchingEntries[0].index;
+        var deduplicatedQueue = queuedRequests
+            .Where(queuedRequest => !IsSamePickupIdentity(queuedRequest, request))
+            .ToList();
+
+        deduplicatedQueue.Insert(
+            Math.Min(firstMatchingIndex, deduplicatedQueue.Count),
+            mergedRequest
+        );
+
+        _waitingPickupRequests.Clear();
+        foreach (var queuedRequest in deduplicatedQueue)
+        {
+            _waitingPickupRequests.Enqueue(queuedRequest);
+        }
+
+        return true;
+    }
+
+    private static bool IsSamePickupIdentity(PickupRequest left, PickupRequest right) =>
+        left.Floor == right.Floor && left.Direction == right.Direction;
 
     public CommandResult AddElevator(IElevator elevator)
     {

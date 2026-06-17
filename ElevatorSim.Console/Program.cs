@@ -23,6 +23,7 @@ internal class ElevatorConsoleApp
         _maximumFloor = maximumFloor;
 
         var factory = new ElevatorFactory();
+        // 2 elevator fleet
         var fleetConfiguration = new ElevatorConfiguration[]
         {
             new PassengerElevatorConfiguration
@@ -124,25 +125,32 @@ internal class ElevatorConsoleApp
 
     private void ExecutePickup(string[] parts)
     {
-        if (!TryReadPickupArgs(parts, out var floor, out var direction, out var error))
+        if (
+            !TryParsePickupRequestArgs(
+                parts,
+                out var floor,
+                out var direction,
+                out var waitingPassengerCount,
+                out var error
+            )
+        )
         {
             Console.WriteLine(error);
             return;
         }
 
-        try
-        {
-            var pickupRequest =
-                direction == ElevatorDirection.None
-                    ? PickupRequest.Create(floor, _minimumFloor, _maximumFloor)
-                    : PickupRequest.Create(floor, direction, _minimumFloor, _maximumFloor);
+        var pickupRequest =
+            direction == ElevatorDirection.None
+                ? PickupRequest.Create(floor, waitingPassengerCount, _minimumFloor, _maximumFloor)
+                : PickupRequest.Create(
+                    floor,
+                    waitingPassengerCount,
+                    direction,
+                    _minimumFloor,
+                    _maximumFloor
+                );
 
-            PrintDispatchResult(_controller.RequestPickup(pickupRequest));
-        }
-        catch (Exception exception)
-        {
-            Console.WriteLine($"[error] {exception.Message}");
-        }
+        PrintDispatchResult(_controller.RequestPickup(pickupRequest));
     }
 
     private void ExecuteStep(string[] parts)
@@ -180,6 +188,12 @@ internal class ElevatorConsoleApp
 
     private void PrintStatus()
     {
+        var queuedCount = _controller.QueuedPickupRequestCount;
+        if (queuedCount > 0)
+        {
+            Console.WriteLine($"Waiting pickup requests: {queuedCount}");
+        }
+
         var fleetStatus = _controller.GetFleetStatus();
         foreach (var status in fleetStatus.OrderBy(elevatorStatus => elevatorStatus.ElevatorId))
         {
@@ -227,18 +241,21 @@ internal class ElevatorConsoleApp
         return true;
     }
 
-    private static bool TryReadPickupArgs(
+    // Parse and validate the arguments for request & pickup commands
+    private static bool TryParsePickupRequestArgs(
         string[] parts,
         out int floor,
         out ElevatorDirection direction,
+        out int waitingPassengerCount,
         out string error
     )
     {
         floor = 0;
         direction = ElevatorDirection.None;
-        error = "Expected: request <floor> [up|down].";
+        waitingPassengerCount = 1;
+        error = "Expected: request <floor> [up|down] [waitingPassengers].";
 
-        if (parts.Length is not (2 or 3))
+        if (parts.Length is < 2 or > 4)
         {
             return false;
         }
@@ -249,14 +266,44 @@ internal class ElevatorConsoleApp
             return false;
         }
 
-        if (parts.Length == 3)
+        var directionGiven = false;
+        var waitingPassengerCountSpecified = false;
+        for (var i = 2; i < parts.Length; i++)
         {
-            direction = ParseDirection(parts[2]);
-            if (direction == ElevatorDirection.None)
+            if (int.TryParse(parts[i], out var parsedWaitingPassengerCount))
             {
-                error = $"Invalid direction: '{parts[2]}'. Use 'up' or 'down'.";
+                if (waitingPassengerCountSpecified)
+                {
+                    error = "Waiting passenger count can only be provided once.";
+                    return false;
+                }
+
+                if (parsedWaitingPassengerCount < 1)
+                {
+                    error = "Waiting passenger count must be 1 or more.";
+                    return false;
+                }
+
+                waitingPassengerCount = parsedWaitingPassengerCount;
+                waitingPassengerCountSpecified = true;
+                continue;
+            }
+
+            var parsedDirection = ParseDirection(parts[i]);
+            if (parsedDirection == ElevatorDirection.None)
+            {
+                error = "Use 'up' or 'down' for direction or a waiting passenger count";
                 return false;
             }
+
+            if (directionGiven)
+            {
+                error = "Direction can only be given once.";
+                return false;
+            }
+
+            direction = parsedDirection;
+            directionGiven = true;
         }
 
         error = string.Empty;
@@ -295,8 +342,8 @@ internal class ElevatorConsoleApp
         Console.WriteLine("Commands:");
         Console.WriteLine("  help");
         Console.WriteLine("  status");
-        Console.WriteLine("  request <floor> [up|down]");
-        Console.WriteLine("  pickup <floor> [up|down]");
+        Console.WriteLine("  request <floor> [up|down] [waitingPassengers]");
+        Console.WriteLine("  pickup <floor> [up|down] [waitingPassengers]");
         Console.WriteLine("  step [ticks]");
         Console.WriteLine("  exit");
     }

@@ -3,7 +3,6 @@ using ElevatorSim.Application.Services;
 using ElevatorSim.Domain.Enums;
 using ElevatorSim.Domain.Interfaces;
 using ElevatorSim.Domain.ValueObjects;
-using FreightElevatorEntity = ElevatorSim.Domain.Entities.FreightElevator;
 using PassengerElevatorEntity = ElevatorSim.Domain.Entities.PassengerElevator;
 
 namespace ElevatorSim.Tests.Application;
@@ -20,7 +19,7 @@ public class NearestElevatorDispatchServiceTests
             CreatePassengerElevator(id: 2, currentFloor: 6),
             CreatePassengerElevator(id: 3, currentFloor: 3),
         };
-        var request = PickupRequest.Create(4, ElevatorDirection.Up, -1, 10);
+        var request = PickupRequest.Create(4, 2, ElevatorDirection.Up, -1, 10);
 
         var result = service.Dispatch(elevators, request);
 
@@ -30,18 +29,22 @@ public class NearestElevatorDispatchServiceTests
     }
 
     [Fact]
-    public void Dispatch_Skips_Nearest_Elevator_When_At_Capacity()
+    public void Dispatch_Returns_Queued_Without_Assignment_When_All_Eligible_Elevators_Are_Busy()
     {
         var service = new NearestElevatorDispatchService();
-        var fullElevator = CreatePassengerElevator(id: 1, currentFloor: 4, maximumCapacity: 1);
-        var nextElevator = CreatePassengerElevator(id: 2, currentFloor: 7);
-        fullElevator.Board(new PassengerCount(1));
-        var request = PickupRequest.Create(5, ElevatorDirection.Up, -1, 10);
+        var firstElevator = CreatePassengerElevator(id: 1, currentFloor: 1);
+        var secondElevator = CreatePassengerElevator(id: 2, currentFloor: 2);
 
-        var result = service.Dispatch(new IElevator[] { fullElevator, nextElevator }, request);
+        firstElevator.RequestStop(4);
+        secondElevator.RequestStop(5);
 
-        Assert.Equal(DispatchOutcome.Assigned, result.Outcome);
-        Assert.Equal(2, result.AssignedElevatorId);
+        var result = service.Dispatch(
+            new IElevator[] { firstElevator, secondElevator },
+            PickupRequest.Create(6, 2, ElevatorDirection.Up, -1, 10)
+        );
+
+        Assert.Equal(DispatchOutcome.Queued, result.Outcome);
+        Assert.Null(result.AssignedElevatorId);
     }
 
     private static IPassengerElevator CreatePassengerElevator(

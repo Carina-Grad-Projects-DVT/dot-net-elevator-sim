@@ -11,52 +11,67 @@ public class NearestElevatorDispatchService : IDispatchService
     {
         ArgumentNullException.ThrowIfNull(elevators);
         ArgumentNullException.ThrowIfNull(request);
-
-        var eligibleElevators = elevators
-            .OfType<IPassengerElevator>()
-            .Where(elevator => !elevator.IsAtPassengerCapacity)
-            .Cast<IElevator>()
-            .ToList();
-
-        if (eligibleElevators.Count == 0)
+        var passengerElevators = elevators.OfType<IPassengerElevator>().ToList();
+        if (passengerElevators.Count == 0)
         {
             return DispatchResult.Rejected(
                 requestFloor: request.Floor.Value,
                 requestDirection: request.Direction,
-                // TODO: Better message
-                reason: "No eligible passenger elevators are currently available."
+                reason: "No passenger elevators are available in the fleet."
             );
         }
 
-        var immediatelyAvailableElevators = eligibleElevators
+        var fleetMaximumCapacity = passengerElevators.Max(elevator =>
+            elevator.MaximumPassengerCapacity
+        );
+
+        // TODO : Change logic so big groups will be broken up into smaller groups and not rejected
+        if (request.WaitingPassengerCount > fleetMaximumCapacity)
+        {
+            return DispatchResult.Rejected(
+                requestFloor: request.Floor.Value,
+                requestDirection: request.Direction,
+                reason: $"No elevator can ever board {request.WaitingPassengerCount} waiting passenger(s); fleet max capacity is {fleetMaximumCapacity}."
+            );
+        }
+
+        var currentlyEligibleElevators = passengerElevators
+            .Where(elevator => elevator.CanBoard(request.WaitingPassengers))
+            .Cast<IElevator>()
+            .ToList();
+
+        if (currentlyEligibleElevators.Count == 0)
+        {
+            return DispatchResult.Queued(
+                requestFloor: request.Floor.Value,
+                requestDirection: request.Direction,
+                message: $"All passenger elevators are at capacity for {request.WaitingPassengerCount} waiting passenger(s). Request queued."
+            );
+        }
+
+        var immediatelyAvailableElevators = currentlyEligibleElevators
             .Where(IsAvailableImmediately)
             .ToList();
 
-        var eligibleElevatorCandidates =
-            immediatelyAvailableElevators.Count > 0
-                ? immediatelyAvailableElevators
-                : eligibleElevators;
+        if (immediatelyAvailableElevators.Count == 0)
+        {
+            return DispatchResult.Queued(
+                requestFloor: request.Floor.Value,
+                requestDirection: request.Direction,
+                message: "All elevators are currently busy. Request queued."
+            );
+        }
 
-        var selectedElevator = SelectNearestElevator(eligibleElevatorCandidates, request);
+        var selectedElevator = SelectNearestElevator(immediatelyAvailableElevators, request);
         var estimatedArrivalTicks = EstimateArrivalTicks(selectedElevator, request);
 
         selectedElevator.RequestStop(request.Floor);
 
-        if (immediatelyAvailableElevators.Count > 0)
-        {
-            return DispatchResult.Assigned(
-                requestFloor: request.Floor.Value,
-                requestDirection: request.Direction,
-                elevatorId: selectedElevator.Id.Value,
-                estimatedArrivalTicks: estimatedArrivalTicks
-            );
-        }
-
-        return DispatchResult.Queued(
+        return DispatchResult.Assigned(
             requestFloor: request.Floor.Value,
             requestDirection: request.Direction,
             elevatorId: selectedElevator.Id.Value,
-            message: $"All eligible elevators are currently busy. Request queued for elevator {selectedElevator.Id.Value}."
+            estimatedArrivalTicks: estimatedArrivalTicks
         );
     }
 

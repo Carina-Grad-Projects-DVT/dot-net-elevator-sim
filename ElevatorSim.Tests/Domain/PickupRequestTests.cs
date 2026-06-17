@@ -6,28 +6,20 @@ namespace ElevatorSim.Tests.Domain;
 public class PickupRequestTests
 {
     [Fact]
-    public void Create_With_Valid_Inputs_Returns_PickupRequest()
+    public void Create_With_Valid_Inputs_Returns_Pickup_Request()
     {
-        var request = PickupRequest.Create(3, ElevatorDirection.Up, -1, 10);
+        var request = PickupRequest.Create(3, 4, ElevatorDirection.Up, -1, 10);
 
         Assert.Equal(3, request.Floor.Value);
         Assert.Equal(ElevatorDirection.Up, request.Direction);
-    }
-
-    [Fact]
-    public void Create_With_Floor_Only_Sets_Direction_To_None()
-    {
-        var request = PickupRequest.Create(2, -1, 10);
-
-        Assert.Equal(2, request.Floor.Value);
-        Assert.Equal(ElevatorDirection.None, request.Direction);
+        Assert.Equal(4, request.WaitingPassengerCount);
     }
 
     [Fact]
     public void Create_With_Out_Of_Range_Floor_Throws()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            PickupRequest.Create(20, ElevatorDirection.Down, -1, 10)
+            PickupRequest.Create(20, 2, ElevatorDirection.Down, -1, 10)
         );
     }
 }

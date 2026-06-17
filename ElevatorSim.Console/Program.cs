@@ -1,169 +1,350 @@
-﻿using ElevatorSim.Application.Controllers;
+using ElevatorSim.Application.Controllers;
 using ElevatorSim.Application.Factories;
 using ElevatorSim.Application.Models;
+using ElevatorSim.Application.Services;
 using ElevatorSim.Domain.Enums;
+using ElevatorSim.Domain.ValueObjects;
 
-var factory = new ElevatorFactory();
-var elevatorConfiguration = new ElevatorConfiguration
+const int minimumFloor = -1;
+const int maximumFloor = 10;
+
+var app = new ElevatorConsoleApp(minimumFloor, maximumFloor);
+app.Run();
+
+internal class ElevatorConsoleApp
 {
-    Type = ElevatorType.Passenger,
-    MinimumFloor = -1,
-    MaximumFloor = 10,
-    StartingFloor = 0,
-    MaximumPassengerCapacity = 8,
-};
+    private readonly ElevatorSystemController _controller;
+    private readonly int _minimumFloor;
+    private readonly int _maximumFloor;
 
-var elevator = factory.Create(elevatorConfiguration);
-var controller = new ElevatorController(elevator);
-
-Console.WriteLine("ElevatorSim Console");
-PrintHelp();
-PrintStatus();
-
-while (true)
-{
-    Console.Write("\n> ");
-    var input = Console.ReadLine();
-
-    if (string.IsNullOrWhiteSpace(input))
+    public ElevatorConsoleApp(int minimumFloor, int maximumFloor)
     {
-        continue;
+        _minimumFloor = minimumFloor;
+        _maximumFloor = maximumFloor;
+
+        var factory = new ElevatorFactory();
+        // 2 elevator fleet
+        var fleetConfiguration = new ElevatorConfiguration[]
+        {
+            new PassengerElevatorConfiguration
+            {
+                MinimumFloor = minimumFloor,
+                MaximumFloor = maximumFloor,
+                StartingFloor = 0,
+                MaximumPassengerCapacity = 8,
+            },
+            new PassengerElevatorConfiguration
+            {
+                MinimumFloor = minimumFloor,
+                MaximumFloor = maximumFloor,
+                StartingFloor = 6,
+                MaximumPassengerCapacity = 10,
+            },
+        };
+
+        var elevatorFleet = factory.CreateMany(fleetConfiguration);
+        var dispatchService = new NearestElevatorDispatchService();
+        _controller = new ElevatorSystemController(elevatorFleet, dispatchService);
     }
 
-    var parts = input.Split(
-        ' ',
-        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
-    );
-    var command = parts[0].ToLowerInvariant();
-
-    switch (command)
+    public void Run()
     {
-        case "help":
-            PrintHelp();
-            break;
+        Console.WriteLine("ElevatorSim Console");
+        PrintHelp();
+        PrintStatus();
 
-        case "status":
+        while (true)
+        {
+            Console.Write("\n> ");
+            var input = Console.ReadLine();
+            if (input is null)
+            {
+                Console.WriteLine();
+                break;
+            }
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                continue;
+            }
+
+            var parts = ParseCommand(input);
+            if (parts.Length == 0)
+            {
+                continue;
+            }
+
+            if (ExecuteCommand(parts))
+            {
+                break;
+            }
+
             PrintStatus();
-            break;
+        }
+    }
 
-        case "request":
-            if (!TryReadIntArg(parts, out var floor, out var requestError))
-            {
-                Console.WriteLine(requestError);
+    private static string[] ParseCommand(string input) =>
+        input.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    private bool ExecuteCommand(string[] parts)
+    {
+        var command = parts[0].ToLowerInvariant();
+
+        switch (command)
+        {
+            case "help":
+                PrintHelp();
                 break;
-            }
 
-            PrintResult(controller.RequestStop(floor));
-            break;
-
-        case "board":
-            if (!TryReadIntArg(parts, out var boardingCount, out var boardError))
-            {
-                Console.WriteLine(boardError);
+            case "status":
+                PrintStatus();
                 break;
-            }
 
-            PrintResult(controller.Board(boardingCount));
-            break;
-
-        case "disembark":
-            if (!TryReadIntArg(parts, out var disembarkCount, out var disembarkError))
-            {
-                Console.WriteLine(disembarkError);
+            case "request":
+            case "pickup":
+                ExecutePickup(parts);
                 break;
-            }
 
-            PrintResult(controller.Disembark(disembarkCount));
-            break;
-
-        case "step":
-            if (parts.Length == 1)
-            {
-                PrintResult(controller.Step());
+            case "step":
+                ExecuteStep(parts);
                 break;
-            }
 
-            if (!TryReadIntArg(parts, out var ticks, out var stepError))
-            {
-                Console.WriteLine(stepError);
+            case "exit":
+            case "quit":
+            case "q":
+                return true;
+
+            default:
+                Console.WriteLine("Unknown command.");
+                PrintHelp();
                 break;
-            }
+        }
 
-            PrintResult(controller.AdvanceTicks(ticks));
-            break;
+        return false;
+    }
 
-        case "exit":
+    private void ExecutePickup(string[] parts)
+    {
+        if (
+            !TryParsePickupRequestArgs(
+                parts,
+                out var floor,
+                out var direction,
+                out var waitingPassengerCount,
+                out var error
+            )
+        )
+        {
+            Console.WriteLine(error);
             return;
+        }
 
-        default:
-            Console.WriteLine("Unknown command.");
-            PrintHelp();
-            break;
+        var pickupRequest =
+            direction == ElevatorDirection.None
+                ? PickupRequest.Create(floor, waitingPassengerCount, _minimumFloor, _maximumFloor)
+                : PickupRequest.Create(
+                    floor,
+                    waitingPassengerCount,
+                    direction,
+                    _minimumFloor,
+                    _maximumFloor
+                );
+
+        PrintDispatchResult(_controller.RequestPickup(pickupRequest));
     }
 
-    PrintStatus();
-}
-
-void PrintResult(CommandResult result)
-{
-    var prefix = result.Success ? "[ok]" : "[error]";
-    Console.WriteLine($"{prefix} {result.Message}");
-}
-
-void PrintStatus()
-{
-    var status = controller.GetStatus();
-
-    var capacitySummary = status.ElevatorType switch
+    private void ExecuteStep(string[] parts)
     {
-        ElevatorType.Passenger =>
-            $"passengers: {status.CurrentPassengers ?? 0}/{status.MaximumCapacity ?? 0}",
-        ElevatorType.Freight =>
-            $"load: {status.CurrentLoadKg?.ToString("0.##") ?? "0"}/{status.MaximumLoadKg?.ToString("0.##") ?? "0"} kg",
-        _ => "capacity: -",
-    };
+        if (parts.Length == 1)
+        {
+            PrintResult(_controller.StepAll());
+            return;
+        }
 
-    var capacityState = status.ElevatorType switch
-    {
-        ElevatorType.Passenger => $"at capacity: {status.IsAtCapacity ?? false}",
-        ElevatorType.Freight => $"at load capacity: {status.IsAtLoadCapacity ?? false}",
-        _ => "capacity state: -",
-    };
-    Console.WriteLine(
-        $"E{status.ElevatorId} [{status.ElevatorType}] | floor: {status.CurrentFloorDisplay} ({status.CurrentFloor}) | "
-            + $"dir: {status.Direction} | motion: {status.MotionState} | doors: {status.DoorState} | "
-            + $"{capacitySummary} | {capacityState} | pending stops: {status.PendingStopCount}"
-    );
-}
+        if (!TryReadIntArg(parts, out var ticks, out var error))
+        {
+            Console.WriteLine(error);
+            return;
+        }
 
-bool TryReadIntArg(string[] parts, out int value, out string error)
-{
-    value = 0;
-    error = "Expected one numeric argument.";
-
-    if (parts.Length != 2)
-    {
-        return false;
+        PrintResult(AdvanceSystemTicks(ticks));
     }
 
-    if (!int.TryParse(parts[1], out value))
+    private void PrintResult(CommandResult result)
     {
-        error = $"Invalid number: '{parts[1]}'.";
-        return false;
+        var prefix = result.Success ? "[ok]" : "[error]";
+        Console.WriteLine($"{prefix} {result.Message}");
     }
 
-    error = string.Empty;
-    return true;
-}
+    private void PrintDispatchResult(DispatchResult result)
+    {
+        var prefix = result.IsSuccess ? "[ok]" : "[error]";
+        var etaSuffix = result.EstimatedArrivalTicks is int estimatedArrivalTicks
+            ? $" ETA: {estimatedArrivalTicks} tick(s)."
+            : string.Empty;
 
-void PrintHelp()
-{
-    Console.WriteLine("Commands:");
-    Console.WriteLine("  help");
-    Console.WriteLine("  status");
-    Console.WriteLine("  request <floor>");
-    Console.WriteLine("  board <count>");
-    Console.WriteLine("  disembark <count>");
-    Console.WriteLine("  step [ticks]");
-    Console.WriteLine("  exit");
+        Console.WriteLine($"{prefix} {result.Message}{etaSuffix}");
+    }
+
+    private void PrintStatus()
+    {
+        var queuedCount = _controller.QueuedPickupRequestCount;
+        if (queuedCount > 0)
+        {
+            Console.WriteLine($"Waiting pickup requests: {queuedCount}");
+        }
+
+        var fleetStatus = _controller.GetFleetStatus();
+        foreach (var status in fleetStatus.OrderBy(elevatorStatus => elevatorStatus.ElevatorId))
+        {
+            var capacitySummary = status.ElevatorType switch
+            {
+                ElevatorType.Passenger =>
+                    $"passengers: {status.CurrentPassengers ?? 0}/{status.MaximumCapacity ?? 0}",
+                ElevatorType.Freight =>
+                    $"load: {status.CurrentLoadKg?.ToString("0.##") ?? "0"}/{status.MaximumLoadKg?.ToString("0.##") ?? "0"} kg",
+                _ => "capacity: -",
+            };
+
+            var capacityState = status.ElevatorType switch
+            {
+                ElevatorType.Passenger => $"at capacity: {status.IsAtCapacity ?? false}",
+                ElevatorType.Freight => $"at load capacity: {status.IsAtLoadCapacity ?? false}",
+                _ => "capacity state: -",
+            };
+
+            Console.WriteLine(
+                $"E{status.ElevatorId} [{status.ElevatorType}] | floor: {status.CurrentFloorDisplay} ({status.CurrentFloor}) | "
+                    + $"dir: {status.Direction} | motion: {status.MotionState} | doors: {status.DoorState} | "
+                    + $"{capacitySummary} | {capacityState} | pending stops: {status.PendingStopCount}"
+            );
+        }
+    }
+
+    private static bool TryReadIntArg(string[] parts, out int value, out string error)
+    {
+        value = 0;
+        error = "Expected one numeric argument.";
+
+        if (parts.Length != 2)
+        {
+            return false;
+        }
+
+        if (!int.TryParse(parts[1], out value))
+        {
+            error = $"Invalid number: '{parts[1]}'.";
+            return false;
+        }
+
+        error = string.Empty;
+        return true;
+    }
+
+    // Parse and validate the arguments for request & pickup commands
+    private static bool TryParsePickupRequestArgs(
+        string[] parts,
+        out int floor,
+        out ElevatorDirection direction,
+        out int waitingPassengerCount,
+        out string error
+    )
+    {
+        floor = 0;
+        direction = ElevatorDirection.None;
+        waitingPassengerCount = 1;
+        error = "Expected: request <floor> [up|down] [waitingPassengers].";
+
+        if (parts.Length is < 2 or > 4)
+        {
+            return false;
+        }
+
+        if (!int.TryParse(parts[1], out floor))
+        {
+            error = $"Invalid floor: '{parts[1]}'.";
+            return false;
+        }
+
+        var directionGiven = false;
+        var waitingPassengerCountSpecified = false;
+        for (var i = 2; i < parts.Length; i++)
+        {
+            if (int.TryParse(parts[i], out var parsedWaitingPassengerCount))
+            {
+                if (waitingPassengerCountSpecified)
+                {
+                    error = "Waiting passenger count can only be provided once.";
+                    return false;
+                }
+
+                if (parsedWaitingPassengerCount < 1)
+                {
+                    error = "Waiting passenger count must be 1 or more.";
+                    return false;
+                }
+
+                waitingPassengerCount = parsedWaitingPassengerCount;
+                waitingPassengerCountSpecified = true;
+                continue;
+            }
+
+            var parsedDirection = ParseDirection(parts[i]);
+            if (parsedDirection == ElevatorDirection.None)
+            {
+                error = "Use 'up' or 'down' for direction or a waiting passenger count";
+                return false;
+            }
+
+            if (directionGiven)
+            {
+                error = "Direction can only be given once.";
+                return false;
+            }
+
+            direction = parsedDirection;
+            directionGiven = true;
+        }
+
+        error = string.Empty;
+        return true;
+    }
+
+    private CommandResult AdvanceSystemTicks(int tickCount)
+    {
+        if (tickCount < 1)
+        {
+            return CommandResult.Fail("Tick count must be 1 or more.");
+        }
+
+        for (var i = 0; i < tickCount; i++)
+        {
+            var result = _controller.StepAll();
+            if (!result.Success)
+            {
+                return result;
+            }
+        }
+
+        return CommandResult.Ok($"Advanced all elevators by {tickCount} tick(s).");
+    }
+
+    private static ElevatorDirection ParseDirection(string directionText) =>
+        directionText.ToLowerInvariant() switch
+        {
+            "up" or "u" => ElevatorDirection.Up,
+            "down" or "d" => ElevatorDirection.Down,
+            _ => ElevatorDirection.None,
+        };
+
+    private static void PrintHelp()
+    {
+        Console.WriteLine("Commands:");
+        Console.WriteLine("  help");
+        Console.WriteLine("  status");
+        Console.WriteLine("  request <floor> [up|down] [waitingPassengers]");
+        Console.WriteLine("  pickup <floor> [up|down] [waitingPassengers]");
+        Console.WriteLine("  step [ticks]");
+        Console.WriteLine("  exit");
+    }
 }

@@ -12,9 +12,8 @@ public class ElevatorFactoryTests
     public void Create_With_Valid_Passenger_Config_Returns_Passenger_Elevator()
     {
         var factory = new ElevatorFactory();
-        var configuration = new ElevatorConfiguration
+        var configuration = new PassengerElevatorConfiguration
         {
-            Type = ElevatorType.Passenger,
             MinimumFloor = -1,
             MaximumFloor = 10,
             StartingFloor = 0,
@@ -33,9 +32,8 @@ public class ElevatorFactoryTests
     public void Create_With_Freight_Config_Throws_NotSupported()
     {
         IElevatorFactory factory = new ElevatorFactory();
-        var configuration = new ElevatorConfiguration
+        var configuration = new FreightElevatorConfiguration
         {
-            Type = ElevatorType.Freight,
             MinimumFloor = -1,
             MaximumFloor = 10,
             StartingFloor = 0,

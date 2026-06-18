@@ -1,8 +1,12 @@
 # C# DOT NET Elevator Simulator
 
+Elevator Simulator implemented following the SOLID Principles and using clean architecture.
+
 ## setup instructions
 
-## how to run 
+## how to run
+
+`dotnet run --project ElevatorSim.Console/ElevatorSim.Console.csproj`
 
 ## assumptions
 

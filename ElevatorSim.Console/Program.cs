@@ -14,13 +14,15 @@ app.Run();
 
 internal class ElevatorConsoleApp
 {
-    private const int AutoTickDurationInMilliseconds = 3000;
+    private const int AutoTickDurationInMilliseconds = 2000;
     private const int MaxAutoTicksPerCycle = 20;
     private ElevatorSystemController _controller;
     private readonly ConsoleUIPresenter _presenter;
     private int _minimumFloor;
     private int _maximumFloor;
     private string _previousStatusMessage;
+
+    private readonly record struct ElevatorSnapshot(int CurrentFloor, DoorState DoorState);
 
     public ElevatorConsoleApp(int minimumFloor, int maximumFloor)
     {
@@ -351,7 +353,8 @@ internal class ElevatorConsoleApp
     {
         if (parts.Length == 1)
         {
-            return FormatCommandResult(_controller.StepAll());
+            var (stepResult, tickEvents) = ExecuteSingleTickWithEvents();
+            return BuildStepStatusMessage(stepResult, tickEvents);
         }
 
         if (!TryReadIntArg(parts, out var ticks, out var error))
@@ -359,7 +362,7 @@ internal class ElevatorConsoleApp
             return $"[error] {error}";
         }
 
-        return FormatCommandResult(AdvanceSystemTicks(ticks));
+        return AdvanceSystemTicks(ticks);
     }
 
     private static string FormatCommandResult(CommandResult result)
@@ -377,23 +380,32 @@ internal class ElevatorConsoleApp
         return $"{prefix} {result.Message}{etaSuffix}";
     }
 
-    private CommandResult AdvanceSystemTicks(int tickCount)
+    private string AdvanceSystemTicks(int tickCount)
     {
         if (tickCount < 1)
         {
-            return CommandResult.Fail("Tick count must be 1 or more.");
+            return "[error] Tick count must be 1 or more.";
         }
+        var allTickEvents = new List<string>();
 
         for (var i = 0; i < tickCount; i++)
         {
-            var stepResult = _controller.StepAll();
+            var (stepResult, tickEvents) = ExecuteSingleTickWithEvents();
             if (!stepResult.Success)
             {
-                return stepResult;
+                return FormatCommandResult(stepResult);
             }
+
+            allTickEvents.AddRange(tickEvents);
         }
 
-        return CommandResult.Ok($"Advanced all elevators by {tickCount} tick(s).");
+        var summary = $"Advanced all elevators by {tickCount} tick(s).";
+        if (allTickEvents.Count == 0)
+        {
+            return $"[ok] {summary}";
+        }
+
+        return $"[ok] {summary} {string.Join(" | ", allTickEvents)}";
     }
 
     // Performs ticks while there is activity happening
@@ -407,19 +419,116 @@ internal class ElevatorConsoleApp
         var autoTickCount = 0;
         while (HasActiveSimulationWork())
         {
-            var stepResult = _controller.StepAll();
+            if (autoTickCount >= MaxAutoTicksPerCycle)
+            {
+                _previousStatusMessage =
+                    $"[error] Auto tick stopped after {MaxAutoTicksPerCycle} ticks to prevent an endless loop.";
+                RenderDashboard();
+                return;
+            }
+            var (stepResult, tickEvents) = ExecuteSingleTickWithEvents();
             autoTickCount++;
-            _previousStatusMessage = FormatCommandResult(stepResult);
+            _previousStatusMessage = BuildStepStatusMessage(stepResult, tickEvents);
             RenderDashboard();
 
             if (!stepResult.Success)
             {
                 return;
             }
+
+            Thread.Sleep(AutoTickDurationInMilliseconds);
         }
 
         _previousStatusMessage = "System idle";
         RenderDashboard();
+    }
+
+    private (CommandResult StepResult, List<string> TickEvents) ExecuteSingleTickWithEvents()
+    {
+        var beforeSnapshotByElevatorId = _controller
+            .GetFleetStatus()
+            .ToDictionary(
+                elevatorStatus => elevatorStatus.ElevatorId,
+                elevatorStatus => new ElevatorSnapshot(
+                    CurrentFloor: elevatorStatus.CurrentFloor,
+                    DoorState: elevatorStatus.DoorState
+                )
+            );
+
+        var stepResult = _controller.StepAll();
+        if (!stepResult.Success)
+        {
+            return (stepResult, []);
+        }
+
+        var tickEvents = BuildTickEvents(beforeSnapshotByElevatorId, _controller.GetFleetStatus());
+        return (stepResult, tickEvents);
+    }
+
+    private static List<string> BuildTickEvents(
+        IReadOnlyDictionary<int, ElevatorSnapshot> beforeSnapshotByElevatorId,
+        IReadOnlyCollection<ElevatorStatus> afterFleetStatus
+    )
+    {
+        var tickEvents = new List<string>();
+
+        foreach (var elevatorStatus in afterFleetStatus.OrderBy(status => status.ElevatorId))
+        {
+            if (
+                !beforeSnapshotByElevatorId.TryGetValue(
+                    elevatorStatus.ElevatorId,
+                    out var beforeSnapshot
+                )
+            )
+            {
+                continue;
+            }
+
+            if (elevatorStatus.CurrentFloor != beforeSnapshot.CurrentFloor)
+            {
+                var movementDirection =
+                    elevatorStatus.CurrentFloor > beforeSnapshot.CurrentFloor ? "up" : "down";
+                tickEvents.Add(
+                    $"E{elevatorStatus.ElevatorId} moving {movementDirection} to floor {elevatorStatus.CurrentFloorDisplay}."
+                );
+            }
+
+            if (elevatorStatus.DoorState != beforeSnapshot.DoorState)
+            {
+                if (elevatorStatus.DoorState == DoorState.Open)
+                {
+                    tickEvents.Add(
+                        $"E{elevatorStatus.ElevatorId} doors opening at floor {elevatorStatus.CurrentFloorDisplay}."
+                    );
+                }
+                else if (elevatorStatus.DoorState == DoorState.Closed)
+                {
+                    tickEvents.Add(
+                        $"E{elevatorStatus.ElevatorId} doors closing at floor {elevatorStatus.CurrentFloorDisplay}."
+                    );
+                }
+            }
+        }
+
+        return tickEvents;
+    }
+
+    private static string BuildStepStatusMessage(
+        CommandResult stepResult,
+        IReadOnlyCollection<string> tickEvents
+    )
+    {
+        if (!stepResult.Success)
+        {
+            return FormatCommandResult(stepResult);
+        }
+
+        if (tickEvents.Count == 0)
+        {
+            return FormatCommandResult(stepResult);
+        }
+
+        return $"[ok] {string.Join(" | ", tickEvents)}";
     }
 
     private bool HasActiveSimulationWork()

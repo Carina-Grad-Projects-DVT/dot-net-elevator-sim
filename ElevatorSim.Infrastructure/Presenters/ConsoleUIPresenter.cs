@@ -5,7 +5,6 @@ namespace ElevatorSim.Infrastructure.Presenters;
 
 public class ConsoleUIPresenter
 {
-    // TODO: Test how many elevators can fit on one page
     private const int CellWidth = 22;
     private const string DashDivider =
         "=========================================================================";
@@ -142,7 +141,6 @@ public class ConsoleUIPresenter
 
     private static void RenderTips()
     {
-        // TODO: Make elevator tick on a loop instead of manually
         Console.WriteLine(
             "Commands: help, status, restart, request <floor> [up|down] [waiting], step [ticks], exit"
         );

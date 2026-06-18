@@ -8,7 +8,7 @@ public interface IPassengerElevator : IElevator
     PassengerCount CurrentPassengers { get; }
     int MaximumPassengerCapacity { get; }
     bool IsAtPassengerCapacity { get; }
-    bool CanBoard(PassengerCount passengers);
+    bool CanBoardPassengers(PassengerCount passengers);
     void Board(PassengerCount passengers);
     void Disembark(PassengerCount passengers);
 }

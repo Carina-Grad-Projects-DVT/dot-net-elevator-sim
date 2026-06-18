@@ -1,3 +1,4 @@
+using ElevatorSim.Domain.Exceptions;
 using ElevatorSim.Domain.Interfaces;
 using ElevatorSim.Domain.ValueObjects;
 
@@ -26,14 +27,14 @@ public class PassengerElevator : ElevatorBase, IPassengerElevator
         MaximumPassengerCapacity = maximumPassengerCapacity;
     }
 
-    public bool CanBoard(PassengerCount passengers) =>
+    public bool CanBoardPassengers(PassengerCount passengers) =>
         CurrentPassengers.Value + passengers.Value <= MaximumPassengerCapacity;
 
     public void Board(PassengerCount passengers)
     {
-        if (!CanBoard(passengers))
+        if (!CanBoardPassengers(passengers))
         {
-            throw new InvalidOperationException("Passenger capacity exceeded.");
+            throw new CapacityExceededException("Passenger capacity exceeded.");
         }
 
         CurrentPassengers = new PassengerCount(CurrentPassengers.Value + passengers.Value);
@@ -43,7 +44,9 @@ public class PassengerElevator : ElevatorBase, IPassengerElevator
     {
         if (passengers.Value > CurrentPassengers.Value)
         {
-            throw new InvalidOperationException("Cannot disembark more passengers than onboard.");
+            throw new InvalidElevatorOperationException(
+                "Cannot disembark more passengers than onboard."
+            );
         }
 
         CurrentPassengers = new PassengerCount(CurrentPassengers.Value - passengers.Value);

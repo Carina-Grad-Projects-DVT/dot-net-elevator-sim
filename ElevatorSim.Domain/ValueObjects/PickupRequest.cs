@@ -14,7 +14,7 @@ public record PickupRequest
 
     /// <summary>
     /// Gets the requested direction of travel for pickup.
-    /// If set to <see cref="ElevatorDirection.None", the direction is unspecified.
+    /// If set to ElevatorDirection.None, the direction is unspecified.
     /// </summary>
     public ElevatorDirection Direction { get; }
 

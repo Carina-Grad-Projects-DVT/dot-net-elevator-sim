@@ -1,5 +1,6 @@
 using ElevatorSim.Application.Models;
 using ElevatorSim.Application.Services;
+using ElevatorSim.Domain.Exceptions;
 using ElevatorSim.Domain.Interfaces;
 using ElevatorSim.Domain.ValueObjects;
 

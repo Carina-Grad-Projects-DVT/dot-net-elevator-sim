@@ -1,4 +1,5 @@
 using ElevatorSim.Domain.Enums;
+using ElevatorSim.Domain.Exceptions;
 using ElevatorSim.Domain.ValueObjects;
 using Xunit;
 using ElevatorEntity = ElevatorSim.Domain.Entities.PassengerElevator;
@@ -25,7 +26,7 @@ public class ElevatorBasicBehaviorTests
     }
 
     [Fact]
-    public void Boarding_Throws_Invalid_Operation_Exception_When_Exceeding_Capacity()
+    public void Boarding_Throws_Capacity_Exceeded_Exception_When_Exceeding_Capacity()
     {
         var elevator = new ElevatorEntity(
             id: new ElevatorId(1),
@@ -37,7 +38,7 @@ public class ElevatorBasicBehaviorTests
 
         elevator.Board(new PassengerCount(4));
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
+        var exception = Assert.Throws<CapacityExceededException>(() =>
             elevator.Board(new PassengerCount(2))
         );
 

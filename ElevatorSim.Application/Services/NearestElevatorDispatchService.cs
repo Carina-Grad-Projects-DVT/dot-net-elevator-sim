@@ -25,6 +25,7 @@ public class NearestElevatorDispatchService : IDispatchService
             elevator.MaximumPassengerCapacity
         );
 
+        // Groups larger than fleet capacity are rejected, split logic could be implemented in future.
         if (request.WaitingPassengerCount > fleetMaximumCapacity)
         {
             return DispatchResult.Rejected(
@@ -35,7 +36,7 @@ public class NearestElevatorDispatchService : IDispatchService
         }
 
         var currentlyEligibleElevators = passengerElevators
-            .Where(elevator => elevator.CanBoard(request.WaitingPassengers))
+            .Where(elevator => elevator.CanBoardPassengers(request.WaitingPassengers))
             .Cast<IElevator>()
             .ToList();
 

@@ -32,7 +32,7 @@ public class ElevatorFactory : IElevatorFactory
         };
     }
 
-    private static int _nextElevatorId;
+    private static int s_nextElevatorId;
 
     public IReadOnlyList<IElevator> CreateMany(IEnumerable<ElevatorConfiguration> configurations)
     {
@@ -68,7 +68,7 @@ public class ElevatorFactory : IElevatorFactory
 
     private static ElevatorId CreateNextElevatorId()
     {
-        return new ElevatorId(++_nextElevatorId);
+        return new ElevatorId(++s_nextElevatorId);
     }
 
     private static IElevator CreatePassengerElevator(PassengerElevatorConfiguration configuration)

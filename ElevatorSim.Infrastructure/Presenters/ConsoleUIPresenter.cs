@@ -24,7 +24,10 @@ public class ConsoleUIPresenter
     {
         if (minimumFloor > maximumFloor)
         {
-            throw new ArgumentException("Minimum floor cannot be greater than maximum floor.");
+            throw new ArgumentException(
+                "Minimum floor cannot be greater than maximum floor.",
+                nameof(minimumFloor)
+            );
         }
 
         _minimumFloor = minimumFloor;

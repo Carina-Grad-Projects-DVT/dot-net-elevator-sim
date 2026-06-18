@@ -26,6 +26,20 @@ At startup, configure the building (floor range, elevator count, capacity). Use 
 - Nearest-available dispatch – Requests assigned to closest stationary elevator with no pending stops, requests exceeding max capacity are rejected and otherwise queued.
 - Request merging – Multiple requests to the same floor with the same direction merge (passenger counts accumulate).
 
+## Repository Structure
+
+### .gitignore
+
+The `.gitignore` file excludes the following from version control:
+
+- **Build outputs:** `bin/`, `obj/` – compiler and runtime artifacts
+- **IDE files:** `.vs/` (Visual Studio), `.idea/` (Rider), `.vscode/` (VS Code) – IDE-specific settings and caches
+- **User files:** `*.user`, `*.suo`, `*.userosscache` – per-developer Visual Studio preferences
+- **Test results:** `TestResults/`, `coverage/`, `*.coverage*` – generated test execution and code coverage reports
+- **NuGet packages:** `*.nupkg`, `packages/` – dependency packages (restored via `dotnet restore`)
+- **Logs:** `*.log` – application and build logs
+- **OS files:** `.DS_Store`, `Thumbs.db` – macOS and Windows metadata files
+
 ## Notes
 
 - feature/domain-starter-logic only has one commit due to a mistake with gitignore. The true commits for this branch can be seen on feature/initial-domain-logic

@@ -26,6 +26,8 @@ public class ConsoleUIPresenter : IElevatorPresenter
     }
 
     private void UI()
+    // First ask for building size (how many floors) + elevator amount with their types (only passenger elevator for now)
+    // After getting this info create something like this :
     {
         Console.WriteLine(
             "========================================================================="
@@ -37,7 +39,7 @@ public class ConsoleUIPresenter : IElevatorPresenter
             "========================================================================="
         );
         Console.WriteLine("Elevators here");
-        // Example
+        // Example with 3 elevators
         // Floor 7  |               |               | [E3:▼(1/4)]   | Queue:
         // Floor 6  |               |               |               | Queue:
         // Floor 5  |               | [E2:■(0/4)]   |               | Queue: ● (1 waiting)

@@ -24,4 +24,38 @@ public class ConsoleUIPresenter : IElevatorPresenter
         _minimumFloor = minimumFloor;
         _maximumFloor = maximumFloor;
     }
+
+    private void UI()
+    {
+        Console.WriteLine(
+            "========================================================================="
+        );
+        Console.WriteLine(
+            "                           ELEVATOR SIMULATION                           "
+        );
+        Console.WriteLine(
+            "========================================================================="
+        );
+        Console.WriteLine("Elevators here");
+        // Example
+        // Floor 7  |               |               | [E3:▼(1/4)]   | Queue:
+        // Floor 6  |               |               |               | Queue:
+        // Floor 5  |               | [E2:■(0/4)]   |               | Queue: ● (1 waiting)
+        // Floor 4  |               |               |               | Queue:
+        // Floor 3  | [E1:▲(3/4)]   |               |               | Queue:
+        // Floor 2  |               |               |               | Queue:
+        // Floor 1  |               |               |               | Queue:
+        // Floor G  |               |               |               | Queue: ●●● (3 waiting)
+        // Floor B1 |               |               |               | Queue:
+        // -----------
+        // Keys : ▲ Up, ▼ Down, ■ Stationary, ● Person in queue
+        Console.WriteLine(
+            "========================================================================="
+        );
+        Console.WriteLine("Status goes here");
+        Console.WriteLine(
+            "========================================================================="
+        );
+        Console.WriteLine("Instructions goes here");
+    }
 }

@@ -26,7 +26,6 @@ public class PassengerElevator : ElevatorBase, IPassengerElevator
         MaximumPassengerCapacity = maximumPassengerCapacity;
     }
 
-    // TODO: CanBoard needs a better name
     public bool CanBoard(PassengerCount passengers) =>
         CurrentPassengers.Value + passengers.Value <= MaximumPassengerCapacity;
 

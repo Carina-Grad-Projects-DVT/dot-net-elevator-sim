@@ -3,6 +3,9 @@ using ElevatorSim.Domain.Enums;
 
 namespace ElevatorSim.Infrastructure.Presenters;
 
+/// <summary>
+/// Renders the elevator simulation state as a text-based console UI
+/// </summary>
 public class ConsoleUIPresenter
 {
     private const int CellWidth = 22;

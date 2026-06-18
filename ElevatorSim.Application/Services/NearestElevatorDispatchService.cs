@@ -25,7 +25,6 @@ public class NearestElevatorDispatchService : IDispatchService
             elevator.MaximumPassengerCapacity
         );
 
-        // TODO : Change logic so big groups will be broken up into smaller groups and not rejected
         if (request.WaitingPassengerCount > fleetMaximumCapacity)
         {
             return DispatchResult.Rejected(

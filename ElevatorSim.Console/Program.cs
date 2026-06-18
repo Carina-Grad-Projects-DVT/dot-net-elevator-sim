@@ -12,6 +12,9 @@ const int defaultMaximumFloor = 5;
 var app = new ElevatorConsoleApp(defaultMinimumFloor, defaultMaximumFloor);
 app.Run();
 
+/// <summary>
+/// Manages the elevator simulation console application, including command parsing
+/// </summary>
 internal class ElevatorConsoleApp
 {
     private const int AutoTickDurationInMilliseconds = 2000;

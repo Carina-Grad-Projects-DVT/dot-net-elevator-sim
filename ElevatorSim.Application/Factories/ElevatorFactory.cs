@@ -37,9 +37,28 @@ public class ElevatorFactory : IElevatorFactory
     public IReadOnlyList<IElevator> CreateMany(IEnumerable<ElevatorConfiguration> configurations)
     {
         ArgumentNullException.ThrowIfNull(configurations);
+        // Could be a building factory instead
+        var configurationList = configurations.ToList();
+        if (configurationList.Count == 0)
+        {
+            return Array.Empty<IElevator>();
+        }
 
-        var elevators = new List<IElevator>();
-        foreach (var configuration in configurations)
+        var buildingMinimumFloor = configurationList[0].MinimumFloor;
+        if (
+            configurationList.Any(configuration =>
+                configuration.MinimumFloor != buildingMinimumFloor
+            )
+        )
+        {
+            throw new ArgumentException(
+                $"All elevator configurations must use the same minimum floor ({buildingMinimumFloor}) as the building.",
+                nameof(configurations)
+            );
+        }
+
+        var elevators = new List<IElevator>(configurationList.Count);
+        foreach (var configuration in configurationList)
         {
             elevators.Add(Create(configuration));
         }

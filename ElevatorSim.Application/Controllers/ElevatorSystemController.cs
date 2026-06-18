@@ -16,6 +16,18 @@ public class ElevatorSystemController
 
     public int QueuedPickupRequestCount => _waitingPickupRequests.Count;
 
+    public IReadOnlyList<PickupRequest> GetQueuedPickupRequestsSnapshot() =>
+        _waitingPickupRequests.ToList();
+
+    public IReadOnlyDictionary<int, int> GetQueuedWaitingCountsByFloor() =>
+        _waitingPickupRequests
+            .GroupBy(request => request.Floor.Value)
+            .OrderBy(group => group.Key)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Sum(request => request.WaitingPassengerCount)
+            );
+
     public ElevatorSystemController(
         IEnumerable<IElevator> initialFleet,
         IDispatchService dispatchService
@@ -176,8 +188,6 @@ public class ElevatorSystemController
 
     public CommandResult RemoveElevator(int elevatorId)
     {
-        // Search for an existing elevator of this value
-        // Return the first match or the default of null
         var elevator = _elevatorFleet.FirstOrDefault(existingElevator =>
             existingElevator.Id.Value == elevatorId
         );

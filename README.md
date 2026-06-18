@@ -1,17 +1,33 @@
 # C# DOT NET Elevator Simulator
 
-Elevator Simulator implemented following the SOLID Principles and using clean architecture.
+Elevator Simulator implemented following SOLID Principles and Clean Architecture.
 
-## setup instructions
+## Setup Instructions
 
-## how to run
+```bash
+git clone git@github.com:Carina-Grad-Projects-DVT/dot-net-elevator-sim.git
+cd ElevatorSim
+dotnet restore
+```
 
-`dotnet run --project ElevatorSim.Console/ElevatorSim.Console.csproj`
+## How to Run
 
-## assumptions
+```bash
+dotnet run --project ElevatorSim.Console/ElevatorSim.Console.csproj
+```
 
-##
+At startup, configure the building (floor range, elevator count, capacity). Use `help` command in the console to see available commands.
+
+## Assumptions
+
+- Single building, configurable floors – Users set floor range and elevator count at runtime (default: -1 to 5, 2 elevators of capacity 4).
+- Passenger elevators only – Fleet uses only passenger elevators. Freight elevators basics are set up but not implemented.
+- Tick-based simulation – Elevators move one floor per tick and auto-tick loop runs up to 20 ticks when elevators are active.
+- Nearest-available dispatch – Requests assigned to closest stationary elevator with no pending stops, requests exceeding max capacity are rejected and otherwise queued.
+- Request merging – Multiple requests to the same floor with the same direction merge (passenger counts accumulate).
 
 ## Notes
 
 - feature/domain-starter-logic only has one commit due to a mistake with gitignore. The true commits for this branch can be seen on feature/initial-domain-logic
+- Freight elevator types are partially defined but creation is not supported.
+- Requests for passenger groups larger than any single elevator's capacity are rejected (not split).

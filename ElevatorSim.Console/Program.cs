@@ -3,6 +3,7 @@ using ElevatorSim.Application.Factories;
 using ElevatorSim.Application.Models;
 using ElevatorSim.Application.Services;
 using ElevatorSim.Domain.Enums;
+using ElevatorSim.Domain.Exceptions;
 using ElevatorSim.Domain.ValueObjects;
 using ElevatorSim.Infrastructure.Presenters;
 
@@ -12,6 +13,9 @@ const int defaultMaximumFloor = 5;
 var app = new ElevatorConsoleApp(defaultMinimumFloor, defaultMaximumFloor);
 app.Run();
 
+/// <summary>
+/// Manages the elevator simulation console application, including command parsing
+/// </summary>
 internal class ElevatorConsoleApp
 {
     private const int AutoTickDurationInMilliseconds = 2000;
@@ -313,9 +317,24 @@ internal class ElevatorConsoleApp
         {
             return ExecuteCommand(parts);
         }
-        catch (Exception exception)
+        catch (InvalidFloorException ex)
         {
-            _previousStatusMessage = $"[error] {exception.Message}";
+            _previousStatusMessage = $"[error] Invalid floor: {ex.Message}";
+            return false;
+        }
+        catch (InvalidElevatorOperationException ex)
+        {
+            _previousStatusMessage = $"[error] Invalid elevator operation: {ex.Message}";
+            return false;
+        }
+        catch (CapacityExceededException ex)
+        {
+            _previousStatusMessage = $"[error] Capacity exceeded: {ex.Message}";
+            return false;
+        }
+        catch (ArgumentException ex)
+        {
+            _previousStatusMessage = $"[error] Invalid argument: {ex.Message}";
             return false;
         }
     }

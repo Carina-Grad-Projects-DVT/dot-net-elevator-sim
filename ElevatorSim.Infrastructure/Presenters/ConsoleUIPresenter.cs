@@ -3,6 +3,9 @@ using ElevatorSim.Domain.Enums;
 
 namespace ElevatorSim.Infrastructure.Presenters;
 
+/// <summary>
+/// Renders the elevator simulation state as a text-based console UI
+/// </summary>
 public class ConsoleUIPresenter
 {
     private const int CellWidth = 22;
@@ -21,7 +24,10 @@ public class ConsoleUIPresenter
     {
         if (minimumFloor > maximumFloor)
         {
-            throw new ArgumentException("Minimum floor cannot be greater than maximum floor.");
+            throw new ArgumentException(
+                "Minimum floor cannot be greater than maximum floor.",
+                nameof(minimumFloor)
+            );
         }
 
         _minimumFloor = minimumFloor;

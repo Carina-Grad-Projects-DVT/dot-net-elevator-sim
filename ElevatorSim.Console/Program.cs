@@ -14,6 +14,8 @@ app.Run();
 
 internal class ElevatorConsoleApp
 {
+    private const int AutoTickDurationInMilliseconds = 3000;
+    private const int MaxAutoTicksPerCycle = 20;
     private ElevatorSystemController _controller;
     private readonly ConsoleUIPresenter _presenter;
     private int _minimumFloor;
@@ -61,6 +63,7 @@ internal class ElevatorConsoleApp
             }
 
             RenderDashboard();
+            RunAutomaticTicksWhileActive();
         }
     }
 
@@ -391,6 +394,45 @@ internal class ElevatorConsoleApp
         }
 
         return CommandResult.Ok($"Advanced all elevators by {tickCount} tick(s).");
+    }
+
+    // Performs ticks while there is activity happening
+    private void RunAutomaticTicksWhileActive()
+    {
+        if (!HasActiveSimulationWork())
+        {
+            return;
+        }
+
+        var autoTickCount = 0;
+        while (HasActiveSimulationWork())
+        {
+            var stepResult = _controller.StepAll();
+            autoTickCount++;
+            _previousStatusMessage = FormatCommandResult(stepResult);
+            RenderDashboard();
+
+            if (!stepResult.Success)
+            {
+                return;
+            }
+        }
+
+        _previousStatusMessage = "System idle";
+        RenderDashboard();
+    }
+
+    private bool HasActiveSimulationWork()
+    {
+        if (_controller.QueuedPickupRequestCount > 0)
+        {
+            return true;
+        }
+
+        var fleetStatus = _controller.GetFleetStatus();
+        return fleetStatus.Any(status =>
+            (status.CurrentPassengers ?? 0) > 0 || status.PendingStopCount > 0
+        );
     }
 
     private static bool TryReadIntArg(string[] parts, out int value, out string error)

@@ -85,9 +85,17 @@ public class ElevatorSystemController
             TryDispatchQueuedRequests();
             return CommandResult.Ok("Advanced all elevators by 1 tick.");
         }
-        catch (Exception exception)
+        catch (InvalidFloorException ex)
         {
-            return CommandResult.Fail(exception.Message);
+            return CommandResult.Fail(ex.Message);
+        }
+        catch (InvalidElevatorOperationException ex)
+        {
+            return CommandResult.Fail(ex.Message);
+        }
+        catch (CapacityExceededException ex)
+        {
+            return CommandResult.Fail(ex.Message);
         }
     }
 

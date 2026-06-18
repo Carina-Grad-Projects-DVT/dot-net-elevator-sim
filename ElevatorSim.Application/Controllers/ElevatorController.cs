@@ -82,7 +82,6 @@ public class ElevatorController
             $"Advanced simulation by {tickCount} tick(s)."
         );
 
-    // avoid repeating try/catch in every controller
     private static CommandResult Execute(Action action, string successMessage)
     {
         try
@@ -90,18 +89,21 @@ public class ElevatorController
             action();
             return CommandResult.Ok(successMessage);
         }
-        catch (Exception exception)
-            when (exception
-                    is InvalidFloorException
-                        or InvalidElevatorOperationException
-                        or CapacityExceededException
-            )
+        catch (InvalidFloorException ex)
         {
-            return CommandResult.Fail(exception.Message);
+            return CommandResult.Fail(ex.Message);
         }
-        catch (Exception exception)
+        catch (InvalidElevatorOperationException ex)
         {
-            return CommandResult.Fail(exception.Message);
+            return CommandResult.Fail(ex.Message);
+        }
+        catch (CapacityExceededException ex)
+        {
+            return CommandResult.Fail(ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return CommandResult.Fail(ex.Message);
         }
     }
 }
